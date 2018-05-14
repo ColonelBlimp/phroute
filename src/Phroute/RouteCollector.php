@@ -70,7 +70,7 @@ class RouteCollector implements RouteDataProviderInterface
 
     /**
      * Add definitions to the RouteCollector using an array, GroupDefinitionInterface, RouteDefinitionInterface.
-     * @param array|GroupDefinitionInterface|RouteDefinitionInterface $definitions
+     * @param mixed $definitions
      * @throws BadDefinitionException
      */
     public function addDefinitions($definitions): void

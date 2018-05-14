@@ -44,11 +44,9 @@ final class GroupDefinition implements GroupDefinitionInterface
      */
     public function groupCallback(RouteCollector $collector): void
     {
-        if (\is_array($this->routes)) {
-            foreach ($this->routes as $httpMethod => $def) {
-                foreach ($def as $route => $handler) {
-                    $collector->addRoute($httpMethod, $route, $handler);
-                }
+        foreach ($this->routes as $httpMethod => $def) {
+            foreach ($def as $route => $handler) {
+                $collector->addRoute($httpMethod, $route, $handler);
             }
         }
     }
