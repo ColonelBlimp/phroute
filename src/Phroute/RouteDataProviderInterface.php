@@ -1,5 +1,6 @@
-<?php namespace Phroute\Phroute;
+<?php declare(strict_types = 1);
 
+namespace Phroute\Phroute;
 
 /**
  * Interface RouteDataProviderInterface
