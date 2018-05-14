@@ -73,7 +73,7 @@ class Dispatcher
      * Dispatch a route filter.
      *
      * @param $filters
-     * @param null $response
+     * @param mixed|null $response
      * @return mixed|null
      */
     private function dispatchFilters($filters, $response = null)
@@ -155,11 +155,12 @@ class Dispatcher
     /**
      * Check fallback routes: HEAD for GET requests followed by the ANY attachment.
      *
-     * @param $routes
-     * @param $httpMethod
+     * @param array $routes
+     * @param string $httpMethod
+     * @return string
      * @throws Exception\HttpMethodNotAllowedException
      */
-    private function checkFallbacks($routes, $httpMethod)
+    private function checkFallbacks(array $routes, string $httpMethod): string
     {
         $additional = [Route::ANY];
 
@@ -212,11 +213,10 @@ class Dispatcher
                 if(!isset($matches[$i + 1]) || $matches[$i + 1] === '')
                 {
                     unset($routes[$httpMethod][2][$varName]);
+                    continue;
                 }
-                else
-                {
-                    $routes[$httpMethod][2][$varName] = $matches[$i + 1];
-                }
+
+                $routes[$httpMethod][2][$varName] = $matches[$i + 1];
             }
 
             return $routes[$httpMethod];

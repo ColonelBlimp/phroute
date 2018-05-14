@@ -9,32 +9,32 @@ use Phroute\Phroute\Route;
 use PHPUnit\Framework\TestCase;
 
 class Test {
-    
+
     public function route()
     {
         return 'testRoute';
     }
-    
+
     public function anyIndex()
     {
         return 'testRouteAnyIndex';
     }
-    
+
     public function anyTest()
     {
         return 'testRouteAnyTest';
     }
-    
+
     public function getTest()
     {
         return 'testRouteGetTest';
     }
-    
+
     public function postTest()
     {
         return 'testRoutePostTest';
     }
-    
+
     public function putTest()
     {
         return 'testRoutePutTest';
@@ -49,12 +49,12 @@ class Test {
     {
         return 'testRouteDeleteTest';
     }
-    
+
     public function headTest()
     {
         return 'testRouteHeadTest';
     }
-    
+
     public function optionsTest()
     {
         return 'testRouteOptionsTest';
@@ -141,28 +141,28 @@ class DispatcherTest extends TestCase
         $callback($r);
         $this->dispatch($r, $method, $uri);
     }
-    
+
     public function testStringObjectIsDispatched()
     {
         $r = $this->router();
-        
+
         $r->addRoute('GET', '/foo', array(__NAMESPACE__.'\\Test','route'));
-        
+
         $response = $this->dispatch($r, 'GET', '/foo');
-                
+
         $this->assertEquals('testRoute',$response);
     }
-    
+
     public function testNamedRoutes()
     {
         $r = $this->router();
-        
+
         $r->addRoute('GET', array('/foo', 'name'), array(__NAMESPACE__.'\\Test','route'));
-                
+
         $this->assertEquals('foo',$r->route('name'));
-        
+
         $r->addRoute('GET', array('/foo/{name}/{something:i}', 'name2'), array(__NAMESPACE__.'\\Test','route'));
-                
+
         $this->assertEquals('foo/joe/something',$r->route('name2', ['joe', 'something']));
 
 
@@ -234,7 +234,7 @@ class DispatcherTest extends TestCase
     public function testDuplicateVariableNameError()
     {
         $this->router()->addRoute('GET', '/foo/{test}/{test:\d+}', function() {
-            
+
         });
     }
 
@@ -246,10 +246,10 @@ class DispatcherTest extends TestCase
     {
         $r = $this->router();
         $r->addRoute('GET', '/user/{id}', function() {
-            
+
         }); // oops, forgot \d+ restriction ;)
         $r->addRoute('GET', '/user/{name}', function() {
-            
+
         });
     }
 
@@ -261,10 +261,10 @@ class DispatcherTest extends TestCase
     {
         $r = $this->router();
         $r->addRoute('GET', '/user', function() {
-            
+
         });
         $r->addRoute('GET', '/user', function() {
-            
+
         });
     }
 
@@ -276,10 +276,10 @@ class DispatcherTest extends TestCase
     {
         $r = $this->router();
         $r->addRoute('GET', '/user/{name}', function() {
-            
+
         });
         $r->addRoute('GET', '/user/nikic', function() {
-            
+
         });
     }
 
@@ -288,7 +288,7 @@ class DispatcherTest extends TestCase
         $r = $this->router();
 
         $dispatchedFilter = false;
-        
+
         $r->filter('test', function() use(&$dispatchedFilter){
             $dispatchedFilter = true;
         });
@@ -298,14 +298,14 @@ class DispatcherTest extends TestCase
         }, array('before' => 'test'));
 
         $this->assertEquals('dispatched', $this->dispatch($r, 'GET', '/user'));
-        
+
         $this->assertTrue($dispatchedFilter);
     }
-    
+
     public function testBeforeFiltersStringClass()
     {
         $r = $this->router();
-        
+
         $r->filter('test', array(__NAMESPACE__ . '\Test','route'));
 
         $r->addRoute('GET', '/user', function() {}, array('before' => 'test'));
@@ -316,8 +316,8 @@ class DispatcherTest extends TestCase
     public function testBeforeFilterCancels()
     {
         $r = $this->router();
-        
-        $r->filter('test', function(){            
+
+        $r->filter('test', function(){
             return 'cancel';
         });
 
@@ -327,17 +327,17 @@ class DispatcherTest extends TestCase
 
         $this->assertEquals('cancel', $this->dispatch($r, 'GET', '/user'));
     }
-    
-    
+
+
     public function testAfterFilters()
     {
         $r = $this->router();
 
         $dispatchedFilter = false;
-        
+
         $r->filter('test', function($response) use(&$dispatchedFilter){
             $dispatchedFilter = true;
-            
+
             return $response . ' filtered';
         });
 
@@ -346,30 +346,30 @@ class DispatcherTest extends TestCase
         }, array('after' => 'test'));
 
         $response = $this->dispatch($r, 'GET', '/user');
-        
+
         $this->assertTrue($dispatchedFilter);
-        
+
         $this->assertEquals('test filtered', $response);
     }
-    
+
     public function testFilterGroups()
     {
         $r = $this->router();
-        
+
         $dispatchedFilter = 0;
         $dispatchedFilter2 = 0;
-        
+
         $r->filter('test', function() use(&$dispatchedFilter){
             $dispatchedFilter++;
         });
-        
+
         $r->filter('test2', function() use(&$dispatchedFilter2){
             $dispatchedFilter2++;
         });
-        
+
         $r->group(array('before' => 'test'), function($router){
             $router->addRoute('GET', '/user', function() {
-            
+
             });
             $router->group(array('before' => 'test2'), function($router){
                 $router->addRoute('GET', '/user2', function() {
@@ -377,16 +377,16 @@ class DispatcherTest extends TestCase
                 });
             });
         });
-        
+
         $this->dispatch($r, 'GET', '/user');
-        
+
         $this->assertEquals(1, $dispatchedFilter);
-        
+
         $this->dispatch($r, 'GET', '/user2');
-        
+
         $this->assertEquals(2, $dispatchedFilter);
         $this->assertEquals(1, $dispatchedFilter2);
-        
+
     }
 
     public function testMultiplePrefixedGroups()
@@ -463,7 +463,7 @@ class DispatcherTest extends TestCase
         $this->assertEquals('yes', $this->dispatch($r, Route::OPTIONS, 'user'));
         $this->assertEquals('yes', $this->dispatch($r, 'MADE_UP_NON_STANDARD_METHOD', 'user'));
     }
-    
+
     public function testRestfulControllerMethods()
     {
 
@@ -590,25 +590,25 @@ class DispatcherTest extends TestCase
 
     public function testRestfulMethods()
     {
-        
+
         $r = $this->router();
-        
+
         $methods = $r->getValidMethods();
-        
+
         foreach($methods as $method)
         {
             $r->$method('/user','callback');
         }
-        
+
         $data = $r->getData();
-        
+
         $this->assertEquals($methods, array_keys($data->getStaticRoutes()['user']));
     }
-    
+
     public function provideFoundDispatchCases()
     {
         $cases = [];
-        
+
          // 0 -------------------------------------------------------------------------------------->
 
         $callback = function($r) {
@@ -616,7 +616,7 @@ class DispatcherTest extends TestCase
                 return true;
             });
         };
-        
+
         $cases[] = ['GET', '', $callback, true];
 
         $cases[] = ['GET', '/', $callback, true];
@@ -626,7 +626,7 @@ class DispatcherTest extends TestCase
                 return true;
             });
         };
-        
+
         $cases[] = ['GET', '', $callback, true];
 
         $cases[] = ['GET', '/', $callback, true];
@@ -640,9 +640,9 @@ class DispatcherTest extends TestCase
         };
 
         $cases[] = ['GET', '/resource/123/456', $callback, true];
-        
-        
-        
+
+
+
         $callback = function($r) {
             $r->addRoute('GET', 'resource/123/456', function() {
                 return true;
@@ -650,8 +650,8 @@ class DispatcherTest extends TestCase
         };
 
         $cases[] = ['GET', 'resource/123/456', $callback, true];
-        
-        
+
+
         $callback = function($r) {
             $r->addRoute('GET', 'resource/123/456', function() {
                 return true;
@@ -664,10 +664,10 @@ class DispatcherTest extends TestCase
 
         $callback = function($r) {
             $r->addRoute('GET', '/handler0', function() {
-                
+
             });
             $r->addRoute('GET', '/handler1', function() {
-                
+
             });
             $r->addRoute('GET', '/handler2', function() {
                 return true;
@@ -710,10 +710,10 @@ class DispatcherTest extends TestCase
 
         $callback = function( $r) {
             $r->addRoute('GET', '/user/{id:[0-9]+}', function() {
-                
+
             });
             $r->addRoute('GET', '/user/12345/extension', function() {
-                
+
             });
             $r->addRoute('GET', '/user/{id:[0-9]+}.{extension}', function($id, $extension) {
                 return [$id, $extension];
@@ -735,7 +735,7 @@ class DispatcherTest extends TestCase
                 return 'static0';
             });
             $r->addRoute('GET', '/static1', function() {
-                
+
             });
             $r->addRoute('HEAD', '/static1', function() {
                 return 'static1head';
@@ -760,7 +760,7 @@ class DispatcherTest extends TestCase
 
         // x -------------------------------------------------------------------------------------->
 
-        
+
         // 11 -------------------------------------------------------------------------------------->
         // Test optional parameter
         $callback = function($r) {
@@ -770,10 +770,10 @@ class DispatcherTest extends TestCase
         };
 
         $cases[] = ['GET', '/user/rdlowrey', $callback, array('rdlowrey', null)];
-        
+
         // 12
         $cases[] = ['GET', '/user/rdlowrey/23', $callback, array('rdlowrey', '23')];
-        
+
         // 13 -------------------------------------------------------------------------------------->
         // Test multiple optional parameters
         $callback = function($r) {
@@ -783,13 +783,13 @@ class DispatcherTest extends TestCase
         };
 
         $cases[] = ['GET', '/user/rdlowrey', $callback, array('rdlowrey', null, null)];
-        
+
         // 14
         $cases[] = ['GET', '/user/rdlowrey/23', $callback, array('rdlowrey', '23', null)];
-        
+
         //15
         $cases[] = ['GET', '/user/rdlowrey/23/blah', $callback, array('rdlowrey', '23', 'blah')];
-        
+
 
         $callback = function($r) {
             $r->addRoute('GET', '/user/random_{name}', function($name) {
@@ -799,8 +799,8 @@ class DispatcherTest extends TestCase
 
         //16
         $cases[] = ['GET', '/user/random_rdlowrey', $callback, 'rdlowrey'];
-        
-        
+
+
         $callback = function($r) {
             $r->addRoute('GET', '/user/random_{name}?', function($name = null) {
                 return $name;
@@ -811,7 +811,7 @@ class DispatcherTest extends TestCase
         $cases[] = ['GET', '/user/random_rdlowrey', $callback, 'rdlowrey'];
          //18
         $cases[] = ['GET', '/user/random_', $callback, null];
-        
+
         $callback = function($r) {
             $r->addRoute('GET', '{name}?', function($name = null) {
                 return $name;
@@ -822,7 +822,7 @@ class DispatcherTest extends TestCase
         $cases[] = ['GET', 'rdlowrey', $callback, 'rdlowrey'];
          //20
         $cases[] = ['GET', '/', $callback, null];
-        
+
         // 11 -------------------------------------------------------------------------------------->
         // Test shortcuts parameter
         $callback = function($r) {
@@ -849,8 +849,8 @@ class DispatcherTest extends TestCase
         $cases[] = ['GET', '/user3/21/abcde123', $callback, array('21','abcde123')];
         $cases[] = ['GET', '/user3/21', $callback, array('21', null)];
         $cases[] = ['GET', '/user4/test_something-123', $callback, array('test_something-123')];
-        
-        
+
+
         // 11 -------------------------------------------------------------------------------------->
         // Test shortcuts parameter
         $callback = function($r) {
@@ -879,7 +879,7 @@ class DispatcherTest extends TestCase
         $cases[] = ['GET', '/user4/abcdezzASd123', $callback, 'fourth'];
         $cases[] = ['GET', '/user4/abcde123', $callback, 'fourth'];
         $cases[] = ['GET', '/user4/21', $callback, 'fourth'];
-        
+
         // 11 -------------------------------------------------------------------------------------->
         // Test shortcuts parameter
         $callback = function($r) {
@@ -1001,7 +1001,7 @@ class DispatcherTest extends TestCase
 
         //17
         $cases[] = ['GET', 'rdlowrey', $callback];
-        
+
         //19
         $cases[] = ['GET', '/user/rdlowrey', $callback, null];
 
@@ -1017,7 +1017,7 @@ class DispatcherTest extends TestCase
         $cases[] = ['GET', 'server/1044.10.10.10', $callback, null];
         $cases[] = ['GET', 'server/0.0.0', $callback, null];
         $cases[] = ['GET', 'server/.2.23.111', $callback, null];
-        
+
         return $cases;
     }
 

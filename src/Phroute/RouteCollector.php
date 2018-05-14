@@ -2,6 +2,9 @@
 
 namespace Phroute\Phroute;
 
+use Phroute\Phroute\Definition\GroupDefinitionInterface;
+use Phroute\Phroute\Definition\RouteDefinitionInterface;
+use Phroute\Phroute\Exception\BadDefinitionException;
 use Phroute\Phroute\Exception\BadRouteException;
 use ReflectionClass;
 use ReflectionMethod;
@@ -10,8 +13,8 @@ use ReflectionMethod;
  * Class RouteCollector
  * @package Phroute\Phroute
  */
-class RouteCollector implements RouteDataProviderInterface {
-
+class RouteCollector implements RouteDataProviderInterface
+{
     /**
      * @var string
      */
@@ -60,15 +63,45 @@ class RouteCollector implements RouteDataProviderInterface {
     /**
      * @param RouteParser|null $routeParser
      */
-    public function __construct(RouteParser $routeParser = null) {
+    public function __construct(RouteParser $routeParser = null)
+    {
         $this->routeParser = $routeParser ?: new RouteParser();
+    }
+
+    /**
+     * Add definitions to the RouteCollector using an array, GroupDefinitionInterface, RouteDefinitionInterface.
+     * @param array|GroupDefinitionInterface|RouteDefinitionInterface $definitions
+     * @throws BadDefinitionException
+     */
+    public function addDefinitions($definitions): void
+    {
+        if ($definitions instanceof GroupDefinitionInterface) {
+            $closure = \Closure::fromCallable([$definitions, 'groupCallback']);
+            $this->group(['prefix' => $definitions->getPrefix()], $closure);
+            return;
+        }
+
+        if ($definitions instanceof RouteDefinitionInterface) {
+            $definitions = $definitions->getRoutes();
+        }
+
+        if (!\is_array($definitions)) {
+            throw new BadDefinitionException();
+        }
+
+        foreach ($definitions as $httpMethod => $def) {
+            foreach ($def as $route => $handler) {
+                $this->addRoute($httpMethod, $route, $handler);
+            }
+        }
     }
 
     /**
      * @param $name
      * @return bool
      */
-    public function hasRoute($name): bool {
+    public function hasRoute($name): bool
+    {
         return isset($this->reverse[$name]);
     }
 
@@ -116,8 +149,8 @@ class RouteCollector implements RouteDataProviderInterface {
      * @param array $filters
      * @return $this
      */
-    public function addRoute($httpMethod, $route, $handler, array $filters = []) {
-
+    public function addRoute($httpMethod, $route, $handler, array $filters = [])
+    {
         if(\is_array($route))
         {
             list($route, $name) = $route;
@@ -142,12 +175,12 @@ class RouteCollector implements RouteDataProviderInterface {
     }
 
     /**
-     * @param $httpMethod
+     * @param string $httpMethod
      * @param $routeData
      * @param $handler
      * @param $filters
      */
-    private function addStaticRoute($httpMethod, $routeData, $handler, $filters)
+    private function addStaticRoute(string $httpMethod, $routeData, $handler, $filters): void
     {
         $routeStr = $routeData[0];
 
@@ -196,7 +229,7 @@ class RouteCollector implements RouteDataProviderInterface {
 
         $this->globalFilters = \array_merge_recursive($this->globalFilters, \array_intersect_key($filters, [Route::AFTER => 1, Route::BEFORE => 1]));
 
-        // Below cannot assign null to $newPrefix otherwise $this->trim(...) fails with an error!
+        // Below cannot assign null to $newPrefix otherwise $this->trim(...) in $this->addPrefix(...) errors!
         $newPrefix = isset($filters[Route::PREFIX]) ? $this->trim($filters[Route::PREFIX]) : '';
 
         $this->globalRoutePrefix = $this->addPrefix($newPrefix);
@@ -208,6 +241,10 @@ class RouteCollector implements RouteDataProviderInterface {
         $this->globalRoutePrefix = $oldGlobalPrefix;
     }
 
+    /**
+     * @param string $route
+     * @return string
+     */
     private function addPrefix(string $route): string
     {
         return $this->trim($this->trim($this->globalRoutePrefix) . '/' . $route);

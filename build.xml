@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="Nsanja" basedir="." default="build">
+<project name="phroute" basedir="." default="build">
 
     <property name="build.dir" value="${basedir}/build" />
     <property name="src.dir" value="${basedir}/src" />
