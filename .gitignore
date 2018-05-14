@@ -1,2 +1,7 @@
 vendor
 composer.lock
+/.buildpath
+/.project
+/.settings/
+/build/
+/System.out
