@@ -1,4 +1,6 @@
-<?php namespace Phroute\Phroute;
+<?php declare(strict_types = 1);
+
+namespace Phroute\Phroute;
 
 class HandlerResolver implements HandlerResolverInterface {
 	
@@ -11,7 +13,7 @@ class HandlerResolver implements HandlerResolverInterface {
 	
 	public function resolve ($handler)
 	{
-		if(is_array($handler) && is_string($handler[0]))
+		if(\is_array($handler) && \is_string($handler[0]))
 		{
 			$handler[0] = new $handler[0];
 		}
