@@ -1,7 +1,8 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace Phroute\Phroute;
 
+use Phroute\Phroute\Definition\FilterDefinitionInterface;
 use Phroute\Phroute\Definition\GroupDefinitionInterface;
 use Phroute\Phroute\Definition\RouteDefinitionInterface;
 use Phroute\Phroute\Exception\BadDefinitionException;
@@ -75,9 +76,23 @@ class RouteCollector implements RouteDataProviderInterface
      */
     public function addDefinitions($definitions): void
     {
+        if ($definitions instanceof FilterDefinitionInterface) {
+            $handler = \Closure::fromCallable([$definitions, 'filterCallback']);
+            $this->filter($definitions->getName(), $handler);
+            return;
+        }
+
         if ($definitions instanceof GroupDefinitionInterface) {
-            $closure = \Closure::fromCallable([$definitions, 'groupCallback']);
-            $this->group(['prefix' => $definitions->getPrefix()], $closure);
+            $handler = \Closure::fromCallable([$definitions, 'groupCallback']);
+
+            $groupDef = [];
+            $groupDef['prefix'] = $definitions->getPrefix();
+
+            if (!empty($definitions->getBeforeFilter())) {
+                $groupDef = \array_merge($groupDef, $definitions->getBeforeFilter());
+            }
+
+            $this->group($groupDef, $handler);
             return;
         }
 
@@ -110,7 +125,7 @@ class RouteCollector implements RouteDataProviderInterface
      * @param array|null $args
      * @return string
      */
-    public function route($name, array $args = null)
+    public function route($name, array $args = null): string
     {
         $url = [];
 
@@ -147,9 +162,9 @@ class RouteCollector implements RouteDataProviderInterface
      * @param $route
      * @param $handler
      * @param array $filters
-     * @return $this
+     * @return RouteCollector
      */
-    public function addRoute($httpMethod, $route, $handler, array $filters = [])
+    public function addRoute($httpMethod, $route, $handler, array $filters = []): RouteCollector
     {
         if(\is_array($route))
         {
@@ -205,7 +220,7 @@ class RouteCollector implements RouteDataProviderInterface
      * @param $handler
      * @param $filters
      */
-    private function addVariableRoute($httpMethod, $routeData, $handler, $filters)
+    private function addVariableRoute($httpMethod, $routeData, $handler, $filters): void
     {
         list($regex, $variables) = $routeData;
 
@@ -221,7 +236,7 @@ class RouteCollector implements RouteDataProviderInterface
      * @param array $filters
      * @param \Closure $callback
      */
-    public function group(array $filters, \Closure $callback)
+    public function group(array $filters, \Closure $callback): void
     {
         $oldGlobalFilters = $this->globalFilters;
 
@@ -229,7 +244,7 @@ class RouteCollector implements RouteDataProviderInterface
 
         $this->globalFilters = \array_merge_recursive($this->globalFilters, \array_intersect_key($filters, [Route::AFTER => 1, Route::BEFORE => 1]));
 
-        // Below cannot assign null to $newPrefix otherwise $this->trim(...) in $this->addPrefix(...) errors!
+        // Below cannot assign null to newPrefix otherwise addPrefix errors!
         $newPrefix = isset($filters[Route::PREFIX]) ? $this->trim($filters[Route::PREFIX]) : '';
 
         $this->globalRoutePrefix = $this->addPrefix($newPrefix);
@@ -254,7 +269,7 @@ class RouteCollector implements RouteDataProviderInterface
      * @param $name
      * @param $handler
      */
-    public function filter($name, $handler)
+    public function filter($name, $handler): void
     {
         $this->filters[$name] = $handler;
     }
@@ -367,7 +382,7 @@ class RouteCollector implements RouteDataProviderInterface
             {
                 if(\stripos($method->name, $valid) === 0)
                 {
-                    $methodName = $this->camelCaseToDashed(substr($method->name, strlen($valid)));
+                    $methodName = $this->camelCaseToDashed(\substr($method->name, \strlen($valid)));
 
                     $params = $this->buildControllerParameters($method);
 
@@ -390,7 +405,7 @@ class RouteCollector implements RouteDataProviderInterface
      * @param ReflectionMethod $method
      * @return string
      */
-    private function buildControllerParameters(ReflectionMethod $method)
+    private function buildControllerParameters(ReflectionMethod $method): string
     {
         $params = '';
 
@@ -414,7 +429,7 @@ class RouteCollector implements RouteDataProviderInterface
     /**
      * @return array
      */
-    public function getValidMethods()
+    public function getValidMethods(): array
     {
         return [
             Route::ANY,
@@ -431,10 +446,9 @@ class RouteCollector implements RouteDataProviderInterface
     /**
      * @return RouteDataArray
      */
-    public function getData()
+    public function getData(): RouteDataArray
     {
-        if (empty($this->regexToRoutesMap))
-        {
+        if (empty($this->regexToRoutesMap)) {
             return new RouteDataArray($this->staticRoutes, [], $this->filters);
         }
 
@@ -474,11 +488,12 @@ class RouteCollector implements RouteDataProviderInterface
      * @param $regexToRoutesMap
      * @return array
      */
-    private function processChunk($regexToRoutesMap)
+    private function processChunk($regexToRoutesMap): array
     {
         $routeMap = [];
         $regexes = [];
         $numGroups = 0;
+
         foreach ($regexToRoutesMap as $regex => $routes) {
             $firstRoute = \reset($routes);
             $numVariables = \count($firstRoute[2]);

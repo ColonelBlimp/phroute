@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace Phroute\Phroute\Definition;
 
@@ -13,4 +13,18 @@ interface DefinitionSourceInterface
      * @see \Phroute\Phroute\Route
      */
     public function addRoute(string $httpMethod, string $route, $handler): void;
+
+    /**
+     * @param FilterDefinitionInterface $filter
+     */
+    public function addBeforeFilter(FilterDefinitionInterface $filter): void;
+
+    /**
+     * @param FilterDefinitionInterface $filter
+     */
+    public function addAfterFilter(FilterDefinitionInterface $filter): void;
+
+    public function getBeforeFilter(): array;
+
+    public function getAfterFilter(): array;
 }

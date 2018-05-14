@@ -17,6 +17,16 @@ final class GroupDefinition implements GroupDefinitionInterface
     private $routes = [];
 
     /**
+     * @var array
+     */
+    private $beforeFilter = [];
+
+    /**
+     * @var array
+     */
+    private $afterFilter = [];
+
+    /**
      * Constructor
      * @param string $prefix The prefix for this route group.
      *
@@ -58,5 +68,33 @@ final class GroupDefinition implements GroupDefinitionInterface
     public function getPrefix(): string
     {
         return $this->prefix;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @see \Phroute\Phroute\Definition\DefinitionSourceInterface::addBeforeFilter()
+     */
+    public function addBeforeFilter(FilterDefinitionInterface $filter): void
+    {
+        $this->beforeFilter['before'] = $filter->getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     * @see \Phroute\Phroute\Definition\DefinitionSourceInterface::addAfterFilter()
+     */
+    public function addAfterFilter(FilterDefinitionInterface $filter): void
+    {
+        $this->beforeFilter['after'] = $filter->getName();
+    }
+
+    public function getAfterFilter(): array
+    {
+        return $this->afterFilter;
+    }
+
+    public function getBeforeFilter(): array
+    {
+        return $this->beforeFilter;
     }
 }

@@ -31,4 +31,28 @@ final class RouteDefinition implements RouteDefinitionInterface
     {
         return $this->routes;
     }
+
+    /**
+     * {@inheritDoc}
+     * @see \Phroute\Phroute\Definition\DefinitionSourceInterface::addBeforeFilter()
+     */
+    public function addBeforeFilter(FilterDefinitionInterface $filter): void
+    {}
+
+    /**
+     * {@inheritDoc}
+     * @see \Phroute\Phroute\Definition\DefinitionSourceInterface::addAfterFilter()
+     */
+    public function addAfterFilter(FilterDefinitionInterface $filter): void
+    {}
+
+    public function getAfterFilter(): array
+    {
+        return [];
+    }
+
+    public function getBeforeFilter(): array
+    {
+        return [];
+    }
 }
