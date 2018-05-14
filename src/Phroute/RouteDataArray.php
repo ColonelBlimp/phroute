@@ -1,4 +1,6 @@
-<?php namespace Phroute\Phroute;
+<?php declare(strict_types = 1);
+
+namespace Phroute\Phroute;
 
 class RouteDataArray implements RouteDataInterface {
 
@@ -34,7 +36,7 @@ class RouteDataArray implements RouteDataInterface {
     /**
      * @return array
      */
-    public function getStaticRoutes()
+    public function getStaticRoutes(): array
     {
         return $this->staticRoutes;
     }
@@ -42,15 +44,15 @@ class RouteDataArray implements RouteDataInterface {
     /**
      * @return array
      */
-    public function getVariableRoutes()
+    public function getVariableRoutes(): array
     {
         return $this->variableRoutes;
     }
 
     /**
-     * @return mixed
+     * @return array
      */
-    public function getFilters()
+    public function getFilters(): array
     {
         return $this->filters;
     }
