@@ -6,6 +6,7 @@ use Phroute\Phroute\RouteCollector;
 use Phroute\Phroute\RouteParser;
 use Phroute\Phroute\Dispatcher;
 use Phroute\Phroute\Route;
+use PHPUnit\Framework\TestCase;
 
 class Test {
     
@@ -90,8 +91,8 @@ class Test {
     }
 }
 
-class DispatcherTest extends \PHPUnit_Framework_TestCase {
-
+class DispatcherTest extends TestCase
+{
     /**
      * Set appropriate options for the specific Dispatcher class we're testing
      */
@@ -130,10 +131,11 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @dataProvider provideMethodNotAllowedDispatchCases
+     * @expectedException \Phroute\Phroute\Exception\HttpMethodNotAllowedException
      */
     public function testMethodNotAllowedDispatches($method, $uri, $callback, $allowed)
     {
-        $this->setExpectedException('\Phroute\Phroute\Exception\HttpMethodNotAllowedException',"Allow: " . implode(', ', $allowed));
+//        $this->setExpectedException('\Phroute\Phroute\Exception\HttpMethodNotAllowedException',"Allow: " . implode(', ', $allowed));
 
         $r = $this->router();
         $callback($r);
@@ -391,21 +393,22 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
     {
         $r = $this->router();
 
-        $r->group(['prefix' => '/user'], function($router){
+        $r->group(['prefix' => '/user'], function($router) {
             $router->addRoute('GET', '/', function() {
-
+                return '';
             });
-            $router->group(['prefix' => '/foo'], function($router){
-                $router->addRoute('GET', '/{id}', function() {
-
+            $router->group(['prefix' => '/foo'], function($router) {
+                $router->addRoute('GET', '/{id}', function($id) {
+                    return $id;
                 });
             });
         });
 
-        $this->dispatch($r, 'GET', '/user');
+        $response = $this->dispatch($r, 'GET', '/user');
+        $this->assertEmpty($response);
 
-        $this->dispatch($r, 'GET', '/user/foo/2');
-
+        $response = $this->dispatch($r, 'GET', '/user/foo/2');
+        $this->assertSame('2', $response);
     }
 
     public function testVariablePrefix()
@@ -617,8 +620,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         $cases[] = ['GET', '', $callback, true];
 
         $cases[] = ['GET', '/', $callback, true];
-        
-        
+
         $callback = function($r) {
             $r->addRoute('GET', '', function() {
                 return true;
@@ -1068,5 +1070,4 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
 
         return $cases;
     }
-
 }
