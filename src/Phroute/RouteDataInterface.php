@@ -1,24 +1,25 @@
-<?php namespace Phroute\Phroute;
+<?php declare(strict_types = 1);
 
+namespace Phroute\Phroute;
 
 /**
  * Interface RouteDataInterface
  * @package Phroute\Phroute
  */
-interface RouteDataInterface {
+interface RouteDataInterface
+{
+    /**
+     * @return array
+     */
+    public function getStaticRoutes(): array;
 
     /**
      * @return array
      */
-    public function getStaticRoutes();
+    public function getVariableRoutes(): array;
 
     /**
      * @return array
      */
-    public function getVariableRoutes();
-
-    /**
-     * @return array
-     */
-    public function getFilters();
+    public function getFilters(): array;
 }
