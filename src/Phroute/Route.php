@@ -1,4 +1,6 @@
-<?php namespace Phroute\Phroute;
+<?php declare(strict_types = 1);
+
+namespace Phroute\Phroute;
 
 class Route {
 
@@ -30,4 +32,3 @@ class Route {
 
     const OPTIONS = 'OPTIONS';
 }
-
