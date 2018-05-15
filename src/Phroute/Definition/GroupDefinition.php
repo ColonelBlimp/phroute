@@ -4,7 +4,12 @@ namespace Phroute\Phroute\Definition;
 
 use Phroute\Phroute\RouteCollector;
 
-final class GroupDefinition implements GroupDefinitionInterface
+/**
+ * @author Marc L. Veary
+ * @namespace Phroute\Phroute\RouteCollector
+ * @package Phroute\Phroute
+ */
+final class GroupDefinition extends DefinitionSourceAbstract implements GroupDefinitionInterface
 {
     /**
      * @var string
@@ -15,16 +20,6 @@ final class GroupDefinition implements GroupDefinitionInterface
      * @var array
      */
     private $routes = [];
-
-    /**
-     * @var array
-     */
-    private $beforeFilter = [];
-
-    /**
-     * @var array
-     */
-    private $afterFilter = [];
 
     /**
      * Constructor
@@ -52,7 +47,7 @@ final class GroupDefinition implements GroupDefinitionInterface
      * {@inheritDoc}
      * @see \Phroute\Phroute\Definition\GroupDefinitionInterface::groupCallback()
      */
-    public function groupCallback(RouteCollector $collector): void
+    public function execute(RouteCollector $collector): void
     {
         foreach ($this->routes as $httpMethod => $def) {
             foreach ($def as $route => $handler) {
@@ -68,33 +63,5 @@ final class GroupDefinition implements GroupDefinitionInterface
     public function getPrefix(): string
     {
         return $this->prefix;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see \Phroute\Phroute\Definition\DefinitionSourceInterface::addBeforeFilter()
-     */
-    public function addBeforeFilter(FilterDefinitionInterface $filter): void
-    {
-        $this->beforeFilter['before'] = $filter->getName();
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see \Phroute\Phroute\Definition\DefinitionSourceInterface::addAfterFilter()
-     */
-    public function addAfterFilter(FilterDefinitionInterface $filter): void
-    {
-        $this->beforeFilter['after'] = $filter->getName();
-    }
-
-    public function getAfterFilter(): array
-    {
-        return $this->afterFilter;
-    }
-
-    public function getBeforeFilter(): array
-    {
-        return $this->beforeFilter;
     }
 }

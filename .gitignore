@@ -5,3 +5,4 @@ composer.lock
 /.settings/
 /build/
 /System.out
+/cache.properties

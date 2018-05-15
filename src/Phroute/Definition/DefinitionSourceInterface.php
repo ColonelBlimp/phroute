@@ -24,7 +24,9 @@ interface DefinitionSourceInterface
      */
     public function addAfterFilter(FilterDefinitionInterface $filter): void;
 
-    public function getBeforeFilter(): array;
-
-    public function getAfterFilter(): array;
+    /**
+     * Retrieves an array of both 'before' and 'after' filters.
+     * @return array May return an empty array.
+     */
+    public function getFilters(): array;
 }

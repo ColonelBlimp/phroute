@@ -4,7 +4,7 @@ use PHPUnit\Framework\TestCase;
 use Phroute\Phroute\Dispatcher;
 use Phroute\Phroute\Route;
 use Phroute\Phroute\RouteCollector;
-use Phroute\Phroute\Definition\FilterDefinition;
+use Phroute\Phroute\Definition\FilterDefinitionAbsract;
 use Phroute\Phroute\Definition\GroupDefinition;
 use Phroute\Phroute\Definition\RouteDefinition;
 
@@ -17,7 +17,7 @@ class DefinitionTest extends TestCase
         $dispatcher =  new Dispatcher($collector->getData());
         $this->assertSame('Called: BaseController::indexAction', $dispatcher->dispatch('GET', '/'));
         $this->assertContains('Called: Controller::listingAction', $dispatcher->dispatch('GET', 'listing/2'));
-        $this->assertContains('Params: action=edit&id=coffee', $dispatcher->dispatch('GET', 'product?action=edit&id=coffee'));
+        $this->assertContains('params: action=edit&id=coffee', $dispatcher->dispatch('GET', 'product?action=edit&id=coffee'));
     }
 
     public function testRouteDefinitionClass()
@@ -33,7 +33,7 @@ class DefinitionTest extends TestCase
 
         $this->assertSame('Called: BaseController::indexAction', $dispatcher->dispatch('GET', '/'));
         $this->assertContains('Called: Controller::listingAction', $dispatcher->dispatch('GET', 'listing/2'));
-        $this->assertContains('Params: action=edit&id=coffee', $dispatcher->dispatch('GET', 'product?action=edit&id=coffee'));
+        $this->assertContains('params: action=edit&id=coffee', $dispatcher->dispatch('GET', 'product?action=edit&id=coffee'));
     }
 
     public function testRouteGroupClass()
@@ -45,24 +45,28 @@ class DefinitionTest extends TestCase
         $collector->addDefinitions($definitions);
         $dispatcher =  new Dispatcher($collector->getData());
 
-        $this->assertContains('Params: edit', $dispatcher->dispatch('GET', 'admin/product/edit'));
+        $this->assertContains('params: edit', $dispatcher->dispatch('GET', 'admin/product/edit'));
     }
 
     public function testFilterClass()
     {
         $collector = new RouteCollector();
         $this->assertNotNull($collector);
-        $beforeFilter = new FilterDefinition('auth');
+        $beforeFilter = new AuthFilterDefinition('auth');
         $collector->addDefinitions($beforeFilter);
+        $afterFilter = new AnotherFilter('done');
+        $collector->addDefinitions($afterFilter);
 
         $definitions = new GroupDefinition('admin');
         $definitions->addRoute(Route::GET, 'product/{action}', [Controller::class, 'productAction']);
         $definitions->addBeforeFilter($beforeFilter);
+        $definitions->addAfterFilter($afterFilter);
 
         $collector->addDefinitions($definitions);
 
         $dispatcher =  new Dispatcher($collector->getData());
-        $this->assertContains('Params: edit', $dispatcher->dispatch('GET', 'admin/product/edit'));
+        // We assert false here because AnotherFilter::execute(...) returns false
+        $this->assertFalse($dispatcher->dispatch('GET', 'admin/product/edit'));
     }
 
     /**
@@ -108,6 +112,24 @@ class Controller extends BaseController
 
     public function productAction(string $query): string
     {
-        return 'Called: ' . __METHOD__ . "\n" . 'Params: ' . $query;
+        return 'Called: ' . __METHOD__ . ', params: ' . $query;
+    }
+}
+
+class AuthFilterDefinition extends FilterDefinitionAbsract
+{
+    public function execute(...$vars)
+    {
+        echo 'authenticated, ';
+        return;
+    }
+}
+
+class AnotherFilter extends FilterDefinitionAbsract
+{
+    public function execute(...$vars)
+    {
+        echo 'Something needs to be done';
+        return false;
     }
 }

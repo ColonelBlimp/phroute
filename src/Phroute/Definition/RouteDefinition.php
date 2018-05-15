@@ -4,7 +4,12 @@ namespace Phroute\Phroute\Definition;
 
 use Phroute\Phroute\Route;
 
-final class RouteDefinition implements RouteDefinitionInterface
+/**
+ * @author Marc L. Veary
+ * @namespace Phroute\Phroute\Definition
+ * @package Phroute\Phroute
+ */
+final class RouteDefinition extends DefinitionSourceAbstract implements RouteDefinitionInterface
 {
     /**
      * @var array
@@ -30,29 +35,5 @@ final class RouteDefinition implements RouteDefinitionInterface
     public function getRoutes(): array
     {
         return $this->routes;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see \Phroute\Phroute\Definition\DefinitionSourceInterface::addBeforeFilter()
-     */
-    public function addBeforeFilter(FilterDefinitionInterface $filter): void
-    {}
-
-    /**
-     * {@inheritDoc}
-     * @see \Phroute\Phroute\Definition\DefinitionSourceInterface::addAfterFilter()
-     */
-    public function addAfterFilter(FilterDefinitionInterface $filter): void
-    {}
-
-    public function getAfterFilter(): array
-    {
-        return [];
-    }
-
-    public function getBeforeFilter(): array
-    {
-        return [];
     }
 }

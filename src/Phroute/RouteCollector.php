@@ -71,40 +71,24 @@ class RouteCollector implements RouteDataProviderInterface
 
     /**
      * Add definitions to the RouteCollector using an array, GroupDefinitionInterface, RouteDefinitionInterface.
-     * @param mixed $definitions
+     * @param array|object $definition
      * @throws BadDefinitionException
      */
-    public function addDefinitions($definitions): void
+    public function addDefinitions($definition): void
     {
-        if ($definitions instanceof FilterDefinitionInterface) {
-            $handler = \Closure::fromCallable([$definitions, 'filterCallback']);
-            $this->filter($definitions->getName(), $handler);
+        if ($this->addGroupFilterDefinition($definition)) {
             return;
         }
 
-        if ($definitions instanceof GroupDefinitionInterface) {
-            $handler = \Closure::fromCallable([$definitions, 'groupCallback']);
-
-            $groupDef = [];
-            $groupDef['prefix'] = $definitions->getPrefix();
-
-            if (!empty($definitions->getBeforeFilter())) {
-                $groupDef = \array_merge($groupDef, $definitions->getBeforeFilter());
-            }
-
-            $this->group($groupDef, $handler);
-            return;
+        if ($definition instanceof RouteDefinitionInterface) {
+            $definition = $definition->getRoutes();
         }
 
-        if ($definitions instanceof RouteDefinitionInterface) {
-            $definitions = $definitions->getRoutes();
-        }
-
-        if (!\is_array($definitions)) {
+        if (!\is_array($definition)) {
             throw new BadDefinitionException();
         }
 
-        foreach ($definitions as $httpMethod => $def) {
+        foreach ($definition as $httpMethod => $def) {
             foreach ($def as $route => $handler) {
                 $this->addRoute($httpMethod, $route, $handler);
             }
@@ -187,6 +171,39 @@ class RouteCollector implements RouteDataProviderInterface
             $this->addStaticRoute($httpMethod, $routeData, $handler, $filters);
 
         return $this;
+    }
+
+    /**
+     * Adds a Group or Filter definition.
+     * @param mixed $definition
+     * @return bool Returns <code>true</code> if a Group of Filter definition was processed,
+     *              otherwise <code>false</code>.
+     */
+    private function addGroupFilterDefinition($definition): bool
+    {
+        $retval = false;
+
+        if ($definition instanceof FilterDefinitionInterface) {
+            $handler = \Closure::fromCallable([$definition, 'execute']);
+            $this->filter($definition->getName(), $handler);
+
+            $retval = true;
+        } elseif ($definition instanceof GroupDefinitionInterface) {
+            $handler = \Closure::fromCallable([$definition, 'execute']);
+
+            $groupDef = [];
+            $groupDef['prefix'] = $definition->getPrefix();
+
+            if (!empty($definition->getFilters())) {
+                $groupDef = \array_merge($groupDef, $definition->getFilters());
+            }
+
+            $this->group($groupDef, $handler);
+
+            $retval = true;
+        }
+
+        return $retval;
     }
 
     /**

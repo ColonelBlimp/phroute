@@ -24,13 +24,23 @@
         <os family="windows" />
     </condition>
 
-    <target name="build" depends="prepare, phan, phploc, phpunit, phpdox, phpcb">
+    <target name="build" depends="prepare, php-lint, phan, phploc, phpunit, phpdox, phpcb">
         <delete file="${basedir}/System.out" />
     </target>
 
     <target name="prepare">
     	<mkdir dir="${build.dir}" />
     	<mkdir dir="${build.dir}/logs" />
+    </target>
+
+    <target name="php-lint" description="Check for syntax errors">
+        <apply executable="php" failonerror="true">
+            <arg value="-l" />
+            <fileset dir="${src.dir}">
+                <include name="**/*.php" />
+                <modified />
+            </fileset>
+        </apply>
     </target>
 
     <target name="phan">

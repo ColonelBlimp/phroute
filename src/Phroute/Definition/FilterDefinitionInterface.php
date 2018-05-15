@@ -1,15 +1,14 @@
-<?php declare(strict_types=1);
+<?php declare(strict_types = 1);
 
 namespace Phroute\Phroute\Definition;
 
+/**
+ * @author Marc L. Veary
+ * @namespace Phroute\Phroute\Definition
+ * @package Phroute\Phroute
+ */
 interface FilterDefinitionInterface
 {
-    /**
-     * Constructor signature.
-     * @param string $name The name of the filter.
-     */
-    public function __construct(string $name);
-
     /**
      * Retrieves the name of the filter.
      * @return string
@@ -17,7 +16,11 @@ interface FilterDefinitionInterface
     public function getName(): string;
 
     /**
+     * Execute the filter's logic
      * @param mixed ...$vars
+     * @return mixed|null If <code>null</code> is returned, Phroute continues to process the route otherwise
+     *                    execution is stopped. Any thing other than <code>null</code> returned from a filter will
+     *                    prevent the route handler from being dispatched.
      */
-    public function filterCallback(...$vars);
+    public function execute(...$vars);
 }

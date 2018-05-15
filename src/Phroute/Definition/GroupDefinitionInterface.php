@@ -27,5 +27,5 @@ interface GroupDefinitionInterface extends DefinitionSourceInterface
      * this group.
      * @param RouteCollector $collector
      */
-    public function groupCallback(RouteCollector $collector): void;
+    public function execute(RouteCollector $collector): void;
 }

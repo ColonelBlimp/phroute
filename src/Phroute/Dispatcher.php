@@ -67,7 +67,7 @@ class Dispatcher
 
         $resolvedHandler = $this->handlerResolver->resolve($handler);
 
-        if ($resolvedHandler[0] instanceof ParameterSetterInterface) {
+        if (is_array($resolvedHandler) && $resolvedHandler[0] instanceof ParameterSetterInterface) {
             $resolvedHandler[0]->setParameters($params);
         }
 
