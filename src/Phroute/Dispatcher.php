@@ -4,6 +4,7 @@ namespace Phroute\Phroute;
 
 use Phroute\Phroute\Exception\HttpMethodNotAllowedException;
 use Phroute\Phroute\Exception\HttpRouteNotFoundException;
+use Phroute\Phroute\Parameter\ParameterSetterInterface;
 
 class Dispatcher
 {
@@ -49,20 +50,26 @@ class Dispatcher
      *
      * @param string $httpMethod
      * @param string $uri
+     * @param mixed ...$params Any parameters provided here will be passed to a Controller which implements the
+     *                         <code>ParameterSetterInterface</code> interface. This can be useful to pass in the
+     *                         an object which represents the requests or other request related items.
      * @return mixed|null
      */
-    public function dispatch(string $httpMethod, string $uri)
+    public function dispatch(string $httpMethod, string $uri, ...$params)
     {
-        list($handler, $filters, $vars) = $this->dispatchRoute($httpMethod, \trim($uri, '/'));
+        list ($handler, $filters, $vars) = $this->dispatchRoute($httpMethod, \trim($uri, '/'));
 
-        list($beforeFilter, $afterFilter) = $this->parseFilters($filters);
+        list ($beforeFilter, $afterFilter) = $this->parseFilters($filters);
 
-        if(($response = $this->dispatchFilters($beforeFilter)) !== null)
-        {
+        if (($response = $this->dispatchFilters($beforeFilter)) !== null) {
             return $response;
         }
 
         $resolvedHandler = $this->handlerResolver->resolve($handler);
+
+        if ($resolvedHandler[0] instanceof ParameterSetterInterface) {
+            $resolvedHandler[0]->setParameters($params);
+        }
 
         $response = \call_user_func_array($resolvedHandler, $vars);
 
@@ -78,12 +85,10 @@ class Dispatcher
      */
     private function dispatchFilters($filters, $response = null)
     {
-        while($filter = \array_shift($filters))
-        {
+        while ($filter = \array_shift($filters)) {
         	$handler = $this->handlerResolver->resolve($filter);
 
-            if(($filteredResponse = \call_user_func($handler, $response)) !== null)
-            {
+            if (($filteredResponse = \call_user_func($handler, $response)) !== null) {
                 return $filteredResponse;
             }
         }
@@ -102,13 +107,11 @@ class Dispatcher
         $beforeFilter = [];
         $afterFilter = [];
 
-        if(isset($filters[Route::BEFORE]))
-        {
+        if (isset($filters[Route::BEFORE])) {
             $beforeFilter = \array_intersect_key($this->filters, \array_flip((array) $filters[Route::BEFORE]));
         }
 
-        if(isset($filters[Route::AFTER]))
-        {
+        if (isset($filters[Route::AFTER])) {
             $afterFilter = \array_intersect_key($this->filters, \array_flip((array) $filters[Route::AFTER]));
         }
 
@@ -124,8 +127,7 @@ class Dispatcher
      */
     private function dispatchRoute(string $httpMethod, string $uri)
     {
-        if (isset($this->staticRouteMap[$uri]))
-        {
+        if (isset($this->staticRouteMap[$uri])) {
             return $this->dispatchStaticRoute($httpMethod, $uri);
         }
 
@@ -144,8 +146,7 @@ class Dispatcher
     {
         $routes = $this->staticRouteMap[$uri];
 
-        if (!isset($routes[$httpMethod]))
-        {
+        if (!isset($routes[$httpMethod])) {
             $httpMethod = $this->checkFallbacks($routes, $httpMethod);
         }
 
@@ -164,15 +165,12 @@ class Dispatcher
     {
         $additional = [Route::ANY];
 
-        if($httpMethod === Route::HEAD)
-        {
+        if ($httpMethod === Route::HEAD) {
             $additional[] = Route::GET;
         }
 
-        foreach($additional as $method)
-        {
-            if(isset($routes[$method]))
-            {
+        foreach ($additional as $method) {
+            if (isset($routes[$method])) {
                 return $method;
             }
         }
@@ -190,28 +188,23 @@ class Dispatcher
      */
     private function dispatchVariableRoute($httpMethod, $uri)
     {
-        foreach ($this->variableRouteData as $data)
-        {
-            if (!\preg_match($data['regex'], $uri, $matches))
-            {
+        foreach ($this->variableRouteData as $data) {
+            if (!\preg_match($data['regex'], $uri, $matches)) {
                 continue;
             }
 
             $count = \count($matches);
 
-            while(!isset($data['routeMap'][$count++]));
+            while (!isset($data['routeMap'][$count++]));
 
             $routes = $data['routeMap'][$count - 1];
 
-            if (!isset($routes[$httpMethod]))
-            {
+            if (!isset($routes[$httpMethod])) {
                 $httpMethod = $this->checkFallbacks($routes, $httpMethod);
             }
 
-            foreach (\array_values($routes[$httpMethod][2]) as $i => $varName)
-            {
-                if(!isset($matches[$i + 1]) || $matches[$i + 1] === '')
-                {
+            foreach (\array_values($routes[$httpMethod][2]) as $i => $varName) {
+                if (!isset($matches[$i + 1]) || $matches[$i + 1] === '') {
                     unset($routes[$httpMethod][2][$varName]);
                     continue;
                 }

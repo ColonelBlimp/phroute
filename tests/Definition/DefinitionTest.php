@@ -4,9 +4,9 @@ use PHPUnit\Framework\TestCase;
 use Phroute\Phroute\Dispatcher;
 use Phroute\Phroute\Route;
 use Phroute\Phroute\RouteCollector;
+use Phroute\Phroute\Definition\FilterDefinition;
 use Phroute\Phroute\Definition\GroupDefinition;
 use Phroute\Phroute\Definition\RouteDefinition;
-use Phroute\Phroute\Definition\FilterDefinition;
 
 class DefinitionTest extends TestCase
 {
@@ -96,13 +96,18 @@ abstract class BaseController
 
 class Controller extends BaseController
 {
+    public function getVarsAsArray(): array
+    {
+        return ['path', 'test'];
+    }
+
     public function listingAction(string $page): string
     {
         return 'Called: ' . __METHOD__ . "\n" . 'Page: ' . $page;
     }
 
-    public function productAction(string $params): string
+    public function productAction(string $query): string
     {
-        return 'Called: ' . __METHOD__ . "\n" . 'Params: ' . $params;
+        return 'Called: ' . __METHOD__ . "\n" . 'Params: ' . $query;
     }
 }

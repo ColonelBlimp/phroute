@@ -135,7 +135,7 @@ class RouteCollector implements RouteDataProviderInterface
 
         foreach($this->reverse[$name] as $part)
         {
-            if(!$part['variable'])
+            if (!$part['variable'])
             {
                 $url[] = $part['value'];
             }
