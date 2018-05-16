@@ -52,11 +52,11 @@ class RouteCollector extends RouteCollectorAbstract
     }
 
     /**
-     * @param $name
+     * @param string $name
      * @param array|null $args
      * @return string
      */
-    public function route($name, array $args = null): string
+    public function route(string $name, array $args = null): string
     {
         $url = [];
 

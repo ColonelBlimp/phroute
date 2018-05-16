@@ -85,8 +85,7 @@ class RouteParser
 
         $route = \strtr($route, $this->regexShortcuts);
 
-        if (!$matches = $this->extractVariableRouteParts($route))
-        {
+        if (!$matches = $this->extractVariableRouteParts($route)) {
             $reverse = [
                 'variable'  => false,
                 'value'     => $route];
@@ -108,8 +107,7 @@ class RouteParser
 
             $isOptional = \substr($set[0][0], -1) === '?';
 
-            if($isOptional)
-            {
+            if ($isOptional) {
                 $match = $this->makeOptional($match);
             }
 
