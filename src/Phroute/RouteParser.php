@@ -9,8 +9,8 @@ use Phroute\Phroute\Exception\BadRouteException;
  *
  * "/user/{name}/{id:[0-9]+}?"
  */
-class RouteParser {
-
+class RouteParser
+{
     /**
      * Search through the given route looking for dynamic portions.
      *
@@ -79,7 +79,7 @@ class RouteParser {
      * @param $route
      * @return array
      */
-    public function parse($route)
+    public function parse($route): array
     {
         $this->reset();
 
@@ -129,7 +129,7 @@ class RouteParser {
     /**
      * Reset the parser ready for the next route.
      */
-    private function reset()
+    private function reset(): void
     {
         $this->parts = [];
 
@@ -204,8 +204,7 @@ class RouteParser {
     {
         $previous = $this->partsCounter - 1;
 
-        if(isset($this->parts[$previous]) && $this->parts[$previous] === '/')
-        {
+        if (isset($this->parts[$previous]) && $this->parts[$previous] === '/') {
             $this->partsCounter--;
             $match = '(?:/' . $match . ')';
         }

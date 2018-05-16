@@ -2,33 +2,62 @@
 
 namespace Phroute\Phroute;
 
-class Route {
-
+class Route
+{
+    // Constants for before and after filters
     /**
-     * Constants for before and after filters
+     * @var string
      */
     const BEFORE = 'before';
 
+    /**
+     * @var string
+     */
     const AFTER = 'after';
 
+    /**
+     * @var string
+     */
     const PREFIX = 'prefix';
 
+    // Constants for common HTTP methods
     /**
-     * Constants for common HTTP methods
+     * @var string
      */
     const ANY = 'ANY';
 
+    /**
+     * @var string
+     */
     const GET = 'GET';
 
+    /**
+     * @var string
+     */
     const HEAD = 'HEAD';
 
+    /**
+     * @var string
+     */
     const POST = 'POST';
 
+    /**
+     * @var string
+     */
     const PUT = 'PUT';
 
+    /**
+     * @var string
+     */
     const PATCH = 'PATCH';
 
+    /**
+     * @var string
+     */
     const DELETE = 'DELETE';
 
+    /**
+     * @var string
+     */
     const OPTIONS = 'OPTIONS';
 }

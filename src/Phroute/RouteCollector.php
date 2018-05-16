@@ -89,39 +89,6 @@ class RouteCollector extends RouteCollectorAbstract
     }
 
     /**
-     * Adds a Group or Filter definition.
-     * @param mixed $definition
-     * @return bool Returns <code>true</code> if a Group of Filter definition was processed,
-     *              otherwise <code>false</code>.
-     */
-    private function addGroupFilterDefinition($definition): bool
-    {
-        $retval = false;
-
-        if ($definition instanceof FilterDefinitionInterface) {
-            $handler = \Closure::fromCallable([$definition, 'execute']);
-            $this->filter($definition->getName(), $handler);
-
-            $retval = true;
-        } elseif ($definition instanceof GroupDefinitionInterface) {
-            $handler = \Closure::fromCallable([$definition, 'execute']);
-
-            $groupDef = [];
-            $groupDef['prefix'] = $definition->getPrefix();
-
-            if (!empty($definition->getFilters())) {
-                $groupDef = \array_merge($groupDef, $definition->getFilters());
-            }
-
-            $this->group($groupDef, $handler);
-
-            $retval = true;
-        }
-
-        return $retval;
-    }
-
-    /**
      * @param array $filters
      * @param \Closure $callback
      */
@@ -158,7 +125,6 @@ class RouteCollector extends RouteCollectorAbstract
      * @param $route
      * @param $classname
      * @param array $filters
-     * @return $this
      */
     public function controller($route, $classname, array $filters = [])
     {
@@ -168,18 +134,14 @@ class RouteCollector extends RouteCollectorAbstract
 
         $sep = $route === '/' ? '' : '/';
 
-        foreach($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method)
-        {
-            foreach($validMethods as $valid)
-            {
-                if(\stripos($method->name, $valid) === 0)
-                {
+        foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+            foreach ($validMethods as $valid) {
+                if (\stripos($method->name, $valid) === 0) {
                     $methodName = $this->camelCaseToDashed(\substr($method->name, \strlen($valid)));
 
                     $params = $this->buildControllerParameters($method);
 
-                    if($methodName === self::DEFAULT_CONTROLLER_ROUTE)
-                    {
+                    if ($methodName === self::DEFAULT_CONTROLLER_ROUTE) {
                         $this->addRoute($valid, $route . $params, [$classname, $method->name], $filters);
                     }
 
@@ -189,33 +151,6 @@ class RouteCollector extends RouteCollectorAbstract
                 }
             }
         }
-
-        return $this;
-    }
-
-    /**
-     * @param ReflectionMethod $method
-     * @return string
-     */
-    private function buildControllerParameters(ReflectionMethod $method): string
-    {
-        $params = '';
-
-        foreach($method->getParameters() as $param)
-        {
-            $params .= "/{" . $param->getName() . "}" . ($param->isOptional() ? '?' : '');
-        }
-
-        return $params;
-    }
-
-    /**
-     * @param $string
-     * @return string
-     */
-    private function camelCaseToDashed($string)
-    {
-        return \strtolower(\preg_replace('/([A-Z])/', '-$1', \lcfirst($string)));
     }
 
     /**
@@ -245,6 +180,63 @@ class RouteCollector extends RouteCollectorAbstract
         }
 
         return new RouteDataArray($this->staticRoutes, $this->generateVariableRouteData(), $this->filters);
+    }
+
+    /**
+     * Adds a Group or Filter definition.
+     * @param mixed $definition
+     * @return bool Returns <code>true</code> if a Group of Filter definition was processed,
+     *              otherwise <code>false</code>.
+     */
+    private function addGroupFilterDefinition($definition): bool
+    {
+        $retval = false;
+
+        if ($definition instanceof FilterDefinitionInterface) {
+            $handler = \Closure::fromCallable([$definition, 'execute']);
+            $this->filter($definition->getName(), $handler);
+
+            $retval = true;
+        } elseif ($definition instanceof GroupDefinitionInterface) {
+            $handler = \Closure::fromCallable([$definition, 'execute']);
+
+            $groupDef = [];
+            $groupDef['prefix'] = $definition->getPrefix();
+
+            if (!empty($definition->getFilters())) {
+                $groupDef = \array_merge($groupDef, $definition->getFilters());
+            }
+
+            $this->group($groupDef, $handler);
+
+            $retval = true;
+        }
+
+        return $retval;
+    }
+
+    /**
+     * @param ReflectionMethod $method
+     * @return string
+     */
+    private function buildControllerParameters(ReflectionMethod $method): string
+    {
+        $params = '';
+
+        foreach ($method->getParameters() as $param) {
+            $params .= "/{" . $param->getName() . "}" . ($param->isOptional() ? '?' : '');
+        }
+
+        return $params;
+    }
+
+    /**
+     * @param $string
+     * @return string
+     */
+    private function camelCaseToDashed($string)
+    {
+        return \strtolower(\preg_replace('/([A-Z])/', '-$1', \lcfirst($string)));
     }
 
     /**
@@ -292,6 +284,7 @@ class RouteCollector extends RouteCollectorAbstract
         }
 
         $regex = '~^(?|' . \implode('|', $regexes) . ')$~';
+
         return ['regex' => $regex, 'routeMap' => $routeMap];
     }
 }

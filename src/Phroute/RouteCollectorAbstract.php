@@ -64,9 +64,8 @@ abstract class RouteCollectorAbstract implements RouteDataProviderInterface
      * @param $route
      * @param $handler
      * @param array $filters
-     * @return RouteCollector
      */
-    public function addRoute(string $httpMethod, $route, $handler, array $filters = []): RouteCollector
+    public function addRoute(string $httpMethod, $route, $handler, array $filters = [])
     {
         if (\is_array($route)) {
             list ($route, $name) = $route;
@@ -85,96 +84,86 @@ abstract class RouteCollectorAbstract implements RouteDataProviderInterface
         isset($routeData[1]) ?
         $this->addVariableRoute($httpMethod, $routeData, $handler, $filters) :
         $this->addStaticRoute($httpMethod, $routeData, $handler, $filters);
-
-        return $this;
     }
 
     /**
      * @param $route
      * @param $handler
      * @param array $filters
-     * @return RouteCollector
      */
-    public function get($route, $handler, array $filters = []): RouteCollector
+    public function get($route, $handler, array $filters = [])
     {
-        return $this->addRoute(Route::GET, $route, $handler, $filters);
+        $this->addRoute(Route::GET, $route, $handler, $filters);
     }
 
     /**
      * @param $route
      * @param $handler
      * @param array $filters
-     * @return RouteCollector
      */
-    public function head($route, $handler, array $filters = []): RouteCollector
+    public function head($route, $handler, array $filters = [])
     {
-        return $this->addRoute(Route::HEAD, $route, $handler, $filters);
+        $this->addRoute(Route::HEAD, $route, $handler, $filters);
     }
 
     /**
      * @param $route
      * @param $handler
      * @param array $filters
-     * @return RouteCollector
      */
-    public function post($route, $handler, array $filters = []): RouteCollector
+    public function post($route, $handler, array $filters = [])
     {
-        return $this->addRoute(Route::POST, $route, $handler, $filters);
+        $this->addRoute(Route::POST, $route, $handler, $filters);
     }
 
     /**
      * @param $route
      * @param $handler
      * @param array $filters
-     * @return RouteCollector
      */
-    public function put($route, $handler, array $filters = []): RouteCollector
+    public function put($route, $handler, array $filters = [])
     {
-        return $this->addRoute(Route::PUT, $route, $handler, $filters);
+        $this->addRoute(Route::PUT, $route, $handler, $filters);
     }
 
     /**
      * @param $route
      * @param $handler
      * @param array $filters
-     * @return RouteCollector
      */
-    public function patch($route, $handler, array $filters = []): RouteCollector
+    public function patch($route, $handler, array $filters = [])
     {
-        return $this->addRoute(Route::PATCH, $route, $handler, $filters);
+        $this->addRoute(Route::PATCH, $route, $handler, $filters);
     }
 
     /**
      * @param $route
      * @param $handler
      * @param array $filters
-     * @return RouteCollector
      */
-    public function delete($route, $handler, array $filters = []): RouteCollector
+    public function delete($route, $handler, array $filters = [])
     {
-        return $this->addRoute(Route::DELETE, $route, $handler, $filters);
+        $this->addRoute(Route::DELETE, $route, $handler, $filters);
     }
 
     /**
      * @param $route
      * @param $handler
      * @param array $filters
-     * @return RouteCollector
      */
-    public function options($route, $handler, array $filters = []): RouteCollector
+    public function options($route, $handler, array $filters = [])
     {
-        return $this->addRoute(Route::OPTIONS, $route, $handler, $filters);
+        $this->addRoute(Route::OPTIONS, $route, $handler, $filters);
     }
 
     /**
      * @param $route
      * @param $handler
      * @param array $filters
-     * @return RouteCollector
      */
-    public function any($route, $handler, array $filters = []): RouteCollector
+    public function any($route, $handler, array $filters = [])
     {
-        return $this->addRoute(Route::ANY, $route, $handler, $filters);
+        $this->addRoute(Route::ANY, $route, $handler, $filters);
     }
 
     /**
