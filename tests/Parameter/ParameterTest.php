@@ -28,7 +28,7 @@ class MainController implements ParameterSetterInterface
 
     public function setParameters(...$params): void
     {
-        $this->request = $params[0][0];
+        $this->request = $params[0];
     }
 
     public function indexAction(): Request

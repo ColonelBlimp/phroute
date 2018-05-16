@@ -68,7 +68,9 @@ class Dispatcher
         $resolvedHandler = $this->handlerResolver->resolve($handler);
 
         if (is_array($resolvedHandler) && $resolvedHandler[0] instanceof ParameterSetterInterface) {
-            $resolvedHandler[0]->setParameters($params);
+            // strip the outer array to get at the parameters
+            $inner = $params[0];
+            $resolvedHandler[0]->setParameters($inner);
         }
 
         $response = \call_user_func_array($resolvedHandler, $vars);

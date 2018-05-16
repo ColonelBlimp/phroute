@@ -64,23 +64,23 @@ class RouteCollector extends RouteCollectorAbstract
 
         $variable = 0;
 
-        foreach($this->reverse[$name] as $part)
-        {
+        foreach ($this->reverse[$name] as $part) {
             if (!$part['variable'])
             {
                 $url[] = $part['value'];
+                continue;
             }
-            elseif(isset($replacements[$variable]))
-            {
-                if($part['optional'])
-                {
+
+            if (isset($replacements[$variable])) {
+                if ($part['optional']) {
                     $url[] = '/';
                 }
 
                 $url[] = $replacements[$variable++];
+                continue;
             }
-            elseif(!$part['optional'])
-            {
+
+            if (!$part['optional']) {
                 throw new BadRouteException("Expecting route variable '{$part['name']}'");
             }
         }
