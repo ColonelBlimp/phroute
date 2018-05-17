@@ -8,7 +8,7 @@ class HandlerResolver implements HandlerResolverInterface
      * Create an instance of the given handler.
      *
      * @param $handler
-     * @return array|object
+     * @return array
      */
     public function resolve($handler)
     {

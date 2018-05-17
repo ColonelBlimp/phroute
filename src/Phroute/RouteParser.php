@@ -144,12 +144,11 @@ class RouteParser
      * Return any variable route portions from the given route.
      *
      * @param $route
-     * @return mixed
+     * @return mixed|null
      */
     private function extractVariableRouteParts($route)
     {
-        if(\preg_match_all(self::VARIABLE_REGEX, $route, $matches, PREG_OFFSET_CAPTURE | PREG_SET_ORDER))
-        {
+        if (\preg_match_all(self::VARIABLE_REGEX, $route, $matches, PREG_OFFSET_CAPTURE | PREG_SET_ORDER)) {
             return $matches;
         }
 
@@ -164,10 +163,8 @@ class RouteParser
     {
         $static = \preg_split('~(/)~u', \substr($route, $this->regexOffset, $nextOffset - $this->regexOffset), 0, PREG_SPLIT_DELIM_CAPTURE);
 
-        foreach($static as $staticPart)
-        {
-            if($staticPart)
-            {
+        foreach ($static as $staticPart) {
+            if ($staticPart) {
                 $quotedPart = $this->quote($staticPart);
 
                 $this->parts[$this->partsCounter] = $quotedPart;
@@ -186,8 +183,7 @@ class RouteParser
      */
     private function validateVariable($varName)
     {
-        if (isset($this->variables[$varName]))
-        {
+        if (isset($this->variables[$varName])) {
             throw new BadRouteException("Cannot use the same placeholder '$varName' twice");
         }
 
