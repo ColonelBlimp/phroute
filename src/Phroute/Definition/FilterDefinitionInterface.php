@@ -1,5 +1,5 @@
-<?php declare(strict_types = 1);
-
+<?php
+declare(strict_types = 1);
 namespace Phroute\Phroute\Definition;
 
 /**
@@ -13,7 +13,7 @@ interface FilterDefinitionInterface
      * Retrieves the name of the filter.
      * @return string
      */
-    public function getName(): string;
+    function getName(): string;
 
     /**
      * Execute the filter's logic
@@ -22,5 +22,5 @@ interface FilterDefinitionInterface
      *                    execution is stopped. Any thing other than <code>null</code> returned from a filter will
      *                    prevent the route handler from being dispatched.
      */
-    public function execute(...$vars);
+    function execute(...$vars);
 }

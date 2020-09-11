@@ -1,5 +1,5 @@
-<?php declare(strict_types=1);
-
+<?php
+declare(strict_types=1);
 namespace Phroute\Phroute;
 
 use Phroute\Phroute\Definition\FilterDefinitionInterface;
@@ -14,14 +14,14 @@ use ReflectionMethod;
  * Class RouteCollector
  * @package Phroute\Phroute
  */
-class RouteCollector extends RouteCollectorAbstract
+final class RouteCollector extends RouteCollectorAbstract
 {
     /**
      * Add definitions to the RouteCollector using an array, GroupDefinitionInterface, RouteDefinitionInterface.
-     * @param array|object $definition
+     * @param mixed $definition
      * @throws BadDefinitionException
      */
-    public function addDefinitions($definition): void
+    function addDefinitions($definition): void
     {
         if ($this->addGroupFilterDefinition($definition)) {
             return;
@@ -43,21 +43,19 @@ class RouteCollector extends RouteCollectorAbstract
     }
 
     /**
-     * @param $name
+     * @param string $name
      * @return bool
      */
-    public function hasRoute($name): bool
-    {
+    function hasRoute(string $name): bool {
         return isset($this->reverse[$name]);
     }
 
     /**
      * @param string $name
-     * @param array|null $args
+     * @param array<mixed>|null $args
      * @return string
      */
-    public function route(string $name, array $args = null): string
-    {
+    function route(string $name, array $args = null): string {
         $url = [];
 
         $replacements = \is_null($args) ? [] : \array_values($args);
@@ -65,8 +63,7 @@ class RouteCollector extends RouteCollectorAbstract
         $variable = 0;
 
         foreach ($this->reverse[$name] as $part) {
-            if (!$part['variable'])
-            {
+            if (!$part['variable']) {
                 $url[] = $part['value'];
                 continue;
             }
@@ -89,13 +86,12 @@ class RouteCollector extends RouteCollectorAbstract
     }
 
     /**
-     * @param array $filters
-     * @param \Closure $callback
+     * @param array<mixed> $filters
+     * @param callable $callback
      */
-    public function group(array $filters, \Closure $callback): void
+    function group(array $filters, callable $callback): void
     {
         $oldGlobalFilters = $this->globalFilters;
-
         $oldGlobalPrefix = $this->globalRoutePrefix;
 
         $this->globalFilters = \array_merge_recursive($this->globalFilters, \array_intersect_key($filters, [Route::AFTER => 1, Route::BEFORE => 1]));
@@ -113,21 +109,19 @@ class RouteCollector extends RouteCollectorAbstract
     }
 
     /**
-     * @param $name
-     * @param $handler
+     * @param string $name
+     * @param callable $handler
      */
-    public function filter($name, $handler): void
-    {
+    function filter(string $name, callable $handler): void {
         $this->filters[$name] = $handler;
     }
 
     /**
-     * @param $route
-     * @param $classname
-     * @param array $filters
+     * @param string $route
+     * @param mixed $classname
+     * @param array<mixed> $filters
      */
-    public function controller($route, $classname, array $filters = [])
-    {
+    function controller(string $route, $classname, array $filters = []): void {
         $reflection = new ReflectionClass($classname);
 
         $validMethods = $this->getValidMethods();
@@ -154,10 +148,9 @@ class RouteCollector extends RouteCollectorAbstract
     }
 
     /**
-     * @return array
+     * @return array<string>
      */
-    public function getValidMethods(): array
-    {
+    function getValidMethods(): array {
         return [
             Route::ANY,
             Route::GET,
@@ -173,12 +166,10 @@ class RouteCollector extends RouteCollectorAbstract
     /**
      * @return RouteDataArray
      */
-    public function getData(): RouteDataArray
-    {
+    function getData(): RouteDataArray {
         if (empty($this->regexToRoutesMap)) {
             return new RouteDataArray($this->staticRoutes, [], $this->filters);
         }
-
         return new RouteDataArray($this->staticRoutes, $this->generateVariableRouteData(), $this->filters);
     }
 
@@ -188,8 +179,7 @@ class RouteCollector extends RouteCollectorAbstract
      * @return bool Returns <code>true</code> if a Group of Filter definition was processed,
      *              otherwise <code>false</code>.
      */
-    private function addGroupFilterDefinition($definition): bool
-    {
+    private function addGroupFilterDefinition($definition): bool {
         $retval = false;
 
         if ($definition instanceof FilterDefinitionInterface) {
@@ -219,8 +209,7 @@ class RouteCollector extends RouteCollectorAbstract
      * @param ReflectionMethod $method
      * @return string
      */
-    private function buildControllerParameters(ReflectionMethod $method): string
-    {
+    private function buildControllerParameters(ReflectionMethod $method): string {
         $params = '';
 
         foreach ($method->getParameters() as $param) {
@@ -231,40 +220,40 @@ class RouteCollector extends RouteCollectorAbstract
     }
 
     /**
-     * @param $string
+     * @param string $string
      * @return string
      */
-    private function camelCaseToDashed($string)
-    {
-        return \strtolower(\preg_replace('/([A-Z])/', '-$1', \lcfirst($string)));
+    private function camelCaseToDashed(string $string): string {
+        $str = \preg_replace('/([A-Z])/', '-$1', \lcfirst($string));
+        if ($str === null) {
+            throw new \ErrorException(__METHOD__ . ": preg_replace failed [$string]");
+        }
+        return \strtolower($str);
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
-    private function generateVariableRouteData()
-    {
+    private function generateVariableRouteData(): array {
         $chunkSize = $this->computeChunkSize(\count($this->regexToRoutesMap));
         $chunks = \array_chunk($this->regexToRoutesMap, $chunkSize, true);
         return \array_map([$this, 'processChunk'], $chunks);
     }
 
     /**
-     * @param $count
+     * @param int $count
      * @return int
      */
-    private function computeChunkSize($count): int
-    {
+    private function computeChunkSize(int $count): int {
         $numParts = \max(1, \round($count / self::APPROX_CHUNK_SIZE));
         return (int) \ceil($count / $numParts);
     }
 
     /**
-     * @param $regexToRoutesMap
-     * @return array
+     * @param array<mixed> $regexToRoutesMap
+     * @return array<mixed>
      */
-    private function processChunk($regexToRoutesMap): array
-    {
+    private function processChunk($regexToRoutesMap): array {
         $routeMap = [];
         $regexes = [];
         $numGroups = 0;
@@ -273,7 +262,7 @@ class RouteCollector extends RouteCollectorAbstract
             $firstRoute = \reset($routes);
             $numVariables = \count($firstRoute[2]);
             $numGroups = \max($numGroups, $numVariables);
-
+//TODO: Why?
             $regexes[] = $regex . \str_repeat('()', $numGroups - $numVariables);
 
             foreach ($routes as $httpMethod => $route) {

@@ -1,12 +1,12 @@
-<?php declare(strict_types=1);
-
+<?php
+declare(strict_types=1);
 namespace Phroute\Phroute\Definition;
 
 interface RouteDefinitionInterface extends DefinitionSourceInterface
 {
     /**
      * Retrieve a multi-dimensional associative array of all the routes. The top-level array's key is the httpMethod.
-     * @return array
+     * @return array<mixed>
      */
-    public function getRoutes(): array;
+    function getRoutes(): array;
 }

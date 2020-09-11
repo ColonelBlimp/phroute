@@ -1,5 +1,5 @@
 {
-	"name" : "nsanja/phroute",
+	"name" : "html_go/router",
 	"description" : "Fast, fully featured restful request router for PHP",
 	"keywords" : [
 		"routing",
@@ -17,10 +17,10 @@
 		}
 	},
 	"require" : {
-		"php" : ">=7.2"
+		"php" : ">=7.4"
 	},
 	"require-dev" : {
-		"satooshi/php-coveralls" : "2.0.0",
-		"phpunit/phpunit" : "~6.5"
+		"phpunit/phpunit" : "~9.3",
+		"phpstan/phpstan" : "~0.12"
 	}
 }

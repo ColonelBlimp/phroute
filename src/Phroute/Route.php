@@ -1,8 +1,8 @@
-<?php declare(strict_types=1);
-
+<?php
+declare(strict_types=1);
 namespace Phroute\Phroute;
 
-class Route
+final class Route
 {
     // Constants for before and after filters
     /**

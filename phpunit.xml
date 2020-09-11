@@ -1,25 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE project>
+<phpunit
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	bootstrap="./tests/bootstrap.php"
+	processIsolation="true"
+	verbose="true"
+	colors="true">
 
-<phpunit backupGlobals="false"
-         backupStaticAttributes="false"
-         colors="true"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
-         processIsolation="false"
-         stopOnFailure="true"
-         syntaxCheck="false"
-         bootstrap="vendor/autoload.php"
-        >
-    <testsuites>
-        <testsuite name="Phroute Tests">
-            <directory>./tests/</directory>
-        </testsuite>
-    </testsuites>
-
-    <filter>
-        <whitelist>
-            <directory>./src/</directory>
-        </whitelist>
-    </filter>
+  <coverage includeUncoveredFiles="true"
+          processUncoveredFiles="true"
+          pathCoverage="false"
+          ignoreDeprecatedCodeUnits="false"
+          disableCodeCoverageIgnore="false">
+    <include>
+        <directory>src</directory>
+    </include>
+    <report>
+      <html outputDirectory="./build/coverage" lowUpperBound="50" highLowerBound="80"/>
+    </report>
+  </coverage>
+  
+  <testsuites>
+    <testsuite name="HTML-go Router Unit Tests">
+      <directory>tests</directory>
+    </testsuite>
+  </testsuites>
 </phpunit>

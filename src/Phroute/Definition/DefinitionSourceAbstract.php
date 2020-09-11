@@ -1,5 +1,5 @@
-<?php declare(strict_types = 1);
-
+<?php
+declare(strict_types=1);
 namespace Phroute\Phroute\Definition;
 
 /**
@@ -10,34 +10,20 @@ namespace Phroute\Phroute\Definition;
 abstract class DefinitionSourceAbstract implements DefinitionSourceInterface
 {
     /**
-     * @var array
+     * @var array<mixed>
      */
     private $filters = [];
 
-    /**
-     * {@inheritDoc}
-     * @see \Phroute\Phroute\Definition\DefinitionSourceInterface::addBeforeFilter()
-     */
-    public function addBeforeFilter(FilterDefinitionInterface $filter): void
-    {
+
+    function addBeforeFilter(FilterDefinitionInterface $filter): void {
         $this->filters['before'] = $filter->getName();
     }
 
-    /**
-     * {@inheritDoc}
-     * @see \Phroute\Phroute\Definition\DefinitionSourceInterface::addAfterFilter()
-     */
-    public function addAfterFilter(FilterDefinitionInterface $filter): void
-    {
+    function addAfterFilter(FilterDefinitionInterface $filter): void {
         $this->filters['after'] = $filter->getName();
     }
 
-    /**
-     * {@inheritDoc}
-     * @see \Phroute\Phroute\Definition\DefinitionSourceInterface::getFilters()
-     */
-    public function getFilters(): array
-    {
+    function getFilters(): array {
         return $this->filters;
     }
 }

@@ -1,5 +1,5 @@
-<?php declare(strict_types=1);
-
+<?php
+declare(strict_types=1);
 namespace Phroute\Phroute\Definition;
 
 use Phroute\Phroute\Route;
@@ -12,28 +12,18 @@ use Phroute\Phroute\Route;
 final class RouteDefinition extends DefinitionSourceAbstract implements RouteDefinitionInterface
 {
     /**
-     * @var array
+     * @var array<mixed>
      */
     private $routes = [
         Route::GET => [],
         Route::POST => []
     ];
 
-    /**
-     * {@inheritDoc}
-     * @see \Phroute\Phroute\Definition\DefinitionSourceInterface::addRoute()
-     */
-    public function addRoute(string $httpMethod, string $route, $handler): void
-    {
+    function addRoute(string $httpMethod, string $route, $handler): void {
         $this->routes[$httpMethod][$route] = $handler;
     }
 
-    /**
-     * {@inheritDoc}
-     * @see \Phroute\Phroute\Definition\RouteDefinitionInterface::getRoutes()
-     */
-    public function getRoutes(): array
-    {
+    function getRoutes(): array {
         return $this->routes;
     }
 }

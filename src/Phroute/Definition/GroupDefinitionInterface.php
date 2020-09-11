@@ -1,5 +1,5 @@
-<?php declare(strict_types=1);
-
+<?php
+declare(strict_types=1);
 namespace Phroute\Phroute\Definition;
 
 use Phroute\Phroute\RouteCollector;
@@ -14,18 +14,18 @@ interface GroupDefinitionInterface extends DefinitionSourceInterface
      * $router->group(['prefix' => $prefix], ...)
      * </code>
      */
-    public function __construct(string $prefix);
+    function __construct(string $prefix);
 
     /**
      * Returns the prefix for this group definition.
      * @return string
      */
-    public function getPrefix(): string;
+    function getPrefix(): string;
 
     /**
      * The callback method called by the RouteCollector. The implemetation will provide the route definitions for
      * this group.
      * @param RouteCollector $collector
      */
-    public function execute(RouteCollector $collector): void;
+    function execute(RouteCollector $collector): void;
 }

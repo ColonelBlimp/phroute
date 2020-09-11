@@ -1,5 +1,5 @@
-<?php declare(strict_types=1);
-
+<?php
+declare(strict_types=1);
 namespace Phroute\Phroute\Definition;
 
 /**
@@ -19,23 +19,13 @@ abstract class FilterDefinitionAbsract implements FilterDefinitionInterface
      * Constructor signature.
      * @param string $name The name of the filter.
      */
-    final public function __construct(string $name)
-    {
+    final function __construct(string $name) {
         $this->name = $name;
     }
 
-    /**
-     * {@inheritDoc}
-     * @see \Phroute\Phroute\Definition\FilterDefinitionInterface::getName()
-     */
-    final public function getName(): string
-    {
+    final function getName(): string {
         return $this->name;
     }
 
-    /**
-     * {@inheritDoc}
-     * @see \Phroute\Phroute\Definition\FilterDefinitionInterface::execute()
-     */
-    abstract public function execute(...$vars);
+    abstract function execute(...$vars);
 }

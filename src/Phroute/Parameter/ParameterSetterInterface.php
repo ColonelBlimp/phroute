@@ -12,5 +12,8 @@ namespace Phroute\Phroute\Parameter;
  */
 interface ParameterSetterInterface
 {
-    public function setParameters(...$params): void;
+    /**
+     * @param mixed ...$params
+     */
+    function setParameters(...$params): void;
 }

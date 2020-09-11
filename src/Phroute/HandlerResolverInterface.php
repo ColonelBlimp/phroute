@@ -7,9 +7,9 @@ interface HandlerResolverInterface {
 	/**
 	 * Create an instance of the given handler.
 	 *
-	 * @param $handler
-	 * @return array
+	 * @param mixed $handler
+	 * @param mixed $params
+	 * @return callable
 	 */
-
-	public function resolve($handler);
+	function resolve($handler, ...$params): callable;
 }

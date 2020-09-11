@@ -1,37 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<project name="phroute" basedir="." default="build">
+<!DOCTYPE project>
+<project name="HTML-go Router" basedir="." default="minimum">
 
     <property name="build.dir" value="${basedir}/build" />
     <property name="src.dir" value="${basedir}/src" />
+    <property name="vendor.bin.dir" value="${basedir}/vendor/bin" />
 
-    <condition property="phan.exec" value="phan.bat" else="phan">
-        <os family="windows" />
-    </condition>
-    <condition property="phpunit.exec" value="phpunit.bat" else="phpunit">
-        <os family="windows" />
-    </condition>
-    <condition property="phpcb.exec" value="phpcb.bat" else="phpcb">
-        <os family="windows" />
-    </condition>
-    <condition property="phpdox.exec" value="phpdox.bat" else="phpdox">
-        <os family="windows" />
-    </condition>
-    <condition property="phploc.exec" value="phploc.bat" else="phploc">
-        <os family="windows" />
-    </condition>
-    <condition property="stdout" value="System.out" else="/dev/null">
-        <os family="windows" />
-    </condition>
-
-    <target name="build" depends="prepare, php-lint, phan, phploc, phpunit, phpdox, phpcb">
-        <delete file="${basedir}/System.out" />
-    </target>
+	<condition property="stdout" value="System.out" else="/dev/null">
+		<os family="windows" />
+	</condition>
 
     <target name="prepare">
-    	<mkdir dir="${build.dir}" />
-    	<mkdir dir="${build.dir}/logs" />
+        <mkdir dir="${build.dir}/logs" />
     </target>
+
+	<target name="minimum" depends="prepare, php-lint, phpstan, phpunit, cleanup">
+		<delete file="${basedir}/System.out" />
+	</target>
 
     <target name="php-lint" description="Check for syntax errors">
         <apply executable="php" failonerror="true">
@@ -43,53 +28,24 @@
         </apply>
     </target>
 
-    <target name="phan">
-        <exec executable="${phan.exec}">
-            <env key="PHAN_ALLOW_XDEBUG" value="0" />
-            <env key="PHAN_DISABLE_XDEBUG_WARN" value="1" />
-            <arg value="-p" />
-            <arg value="-m" />
-            <arg value="checkstyle" />
-            <arg value="-o" />
-            <arg value="${build.dir}/phan-analysis.xml" />
-        </exec>
-    </target>
+	<target name="phpstan" description="DEV: PHP Static Analysis Tool">
+		<exec executable="${vendor.bin.dir}/phpstan.bat">
+		  <arg value="analyse" />
+		  <arg value="-c" />
+		  <arg path="${build.dir}/phpstan.neon" />
+		  <arg value="--memory-limit" />
+		  <arg value="128M" />
+		</exec>
+	</target>
 
     <target name="phpunit" description="Perform unit tests">
-        <exec executable="${phpunit.exec}" failonerror="true">
-            <arg value="-c" />
-            <arg value="${basedir}/phpunit.xml" />
-            <arg value="--coverage-html" />
-            <arg value="${build.dir}/coverage" />
-            <arg value="--coverage-clover" />
-            <arg value="${build.dir}/logs/clover.xml" />
+        <exec executable="${vendor.bin.dir}/phpunit.bat" failonerror="true">
         </exec>
     </target>
 
-    <target name="phpcb" description="Aggregate all the documentation">
-        <exec executable="${phpcb.exec}">
-            <arg value="--log" />
-            <arg path="${build.dir}/logs" />
-            <arg value="--source" />
-            <arg path="${src.dir}" />
-            <arg value="--output" />
-            <arg path="${build.dir}/code-browser" />
-        </exec>
-    </target>
-
-    <target name="phpdox" description="Code documentation">
-        <exec executable="${phpdox.exec}" output="${stdout}">
-            <arg value="-f" />
-            <arg value="${build.dir}/phpdox.xml" />
-        </exec>
-    </target>
-
-    <target name="phploc" description="Sizing the project">
-        <exec executable="${phploc.exec}" output="${stdout}">
-           <arg value="--log-xml" />
-           <arg value="${build.dir}/logs/phploc.xml" />
-           <arg path="${src.dir}" />
-        </exec>
+    <target name="cleanup" description="Clean up cache">
+        <delete dir="${basedir}/cache/index"/>
+        <delete file="${basedir}/cache/installedVersion.json"/>
     </target>
 
 </project>

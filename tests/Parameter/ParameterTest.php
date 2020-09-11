@@ -9,8 +9,7 @@ use Phroute\Phroute\Parameter\ParameterSetterInterface;
 
 class ParameterTest extends TestCase
 {
-    public function testRequestPassing()
-    {
+    function testRequestPassing(): void {
         $definitions = new RouteDefinition();
         $definitions->addRoute(Route::GET, '', [MainController::class, 'indexAction']);
 
@@ -24,16 +23,13 @@ class ParameterTest extends TestCase
 
 class MainController implements ParameterSetterInterface
 {
-    private $request;
+    private Request $request;
 
-    public function setParameters(...$params): void
-    {
+    function setParameters(...$params): void {
         $this->request = $params[0];
     }
 
-    public function indexAction(): Request
-    {
-
+    function indexAction(): Request {
         return $this->request;
     }
 }

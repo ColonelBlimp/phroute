@@ -3,7 +3,6 @@
 namespace Tester {
 
     abstract class BaseController
-
     {
         public function indexAction(): string
         {
@@ -43,4 +42,3 @@ namespace {
     echo $dispatcher->dispatch('GET', 'listing/2'), "\n";
     echo $dispatcher->dispatch('GET', 'product?action=edit&id=coffee'), "\n";
 }
-

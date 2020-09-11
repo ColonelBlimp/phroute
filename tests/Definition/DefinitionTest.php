@@ -7,21 +7,20 @@ use Phroute\Phroute\RouteCollector;
 use Phroute\Phroute\Definition\FilterDefinitionAbsract;
 use Phroute\Phroute\Definition\GroupDefinition;
 use Phroute\Phroute\Definition\RouteDefinition;
+use Phroute\Phroute\Exception\BadDefinitionException;
 
 class DefinitionTest extends TestCase
 {
-    public function testDefinitionFileLoad()
-    {
+    public function testDefinitionFileLoad(): void {
         $collector = new RouteCollector();
         $collector->addDefinitions($this->getDefinition());
         $dispatcher =  new Dispatcher($collector->getData());
         $this->assertSame('Called: BaseController::indexAction', $dispatcher->dispatch('GET', '/'));
-        $this->assertContains('Called: Controller::listingAction', $dispatcher->dispatch('GET', 'listing/2'));
-        $this->assertContains('params: action=edit&id=coffee', $dispatcher->dispatch('GET', 'product?action=edit&id=coffee'));
+        $this->assertStringContainsString('Called: Controller::listingAction', $dispatcher->dispatch('GET', 'listing/2'));
+        $this->assertStringContainsString('params: action=edit&id=coffee', $dispatcher->dispatch('GET', 'product?action=edit&id=coffee'));
     }
 
-    public function testRouteDefinitionClass()
-    {
+     function testRouteDefinitionClass(): void {
         $collector = new RouteCollector();
         $definitions = new RouteDefinition();
         $definitions->addRoute(Route::GET, '', [Controller::class, 'indexAction']);
@@ -32,12 +31,11 @@ class DefinitionTest extends TestCase
         $dispatcher =  new Dispatcher($collector->getData());
 
         $this->assertSame('Called: BaseController::indexAction', $dispatcher->dispatch('GET', '/'));
-        $this->assertContains('Called: Controller::listingAction', $dispatcher->dispatch('GET', 'listing/2'));
-        $this->assertContains('params: action=edit&id=coffee', $dispatcher->dispatch('GET', 'product?action=edit&id=coffee'));
+        $this->assertStringContainsString('Called: Controller::listingAction', $dispatcher->dispatch('GET', 'listing/2'));
+        $this->assertStringContainsString('params: action=edit&id=coffee', $dispatcher->dispatch('GET', 'product?action=edit&id=coffee'));
     }
 
-    public function testRouteGroupClass()
-    {
+    function testRouteGroupClass(): void {
         $collector = new RouteCollector();
         $definitions = new GroupDefinition('admin');
         $definitions->addRoute(Route::GET, 'product/{action}', [Controller::class, 'productAction']);
@@ -45,11 +43,10 @@ class DefinitionTest extends TestCase
         $collector->addDefinitions($definitions);
         $dispatcher =  new Dispatcher($collector->getData());
 
-        $this->assertContains('params: edit', $dispatcher->dispatch('GET', 'admin/product/edit'));
+        $this->assertStringContainsString('params: edit', $dispatcher->dispatch('GET', 'admin/product/edit'));
     }
 
-    public function testFilterClass()
-    {
+    function testFilterClass(): void {
         $collector = new RouteCollector();
         $this->assertNotNull($collector);
         $beforeFilter = new AuthFilterDefinition('auth');
@@ -69,11 +66,8 @@ class DefinitionTest extends TestCase
         $this->assertFalse($dispatcher->dispatch('GET', 'admin/product/edit'));
     }
 
-    /**
-     * @expectedException \Phroute\Phroute\Exception\BadDefinitionException
-     */
-    public function testBadDefinitionException()
-    {
+    function testBadDefinitionException() {
+        $this->expectException(BadDefinitionException::class);
         $collector = new RouteCollector();
         $collector->addDefinitions('test');
     }

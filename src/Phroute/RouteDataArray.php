@@ -1,59 +1,53 @@
-<?php declare(strict_types=1);
-
+<?php
+declare(strict_types=1);
 namespace Phroute\Phroute;
 
-class RouteDataArray implements RouteDataInterface {
+final class RouteDataArray implements RouteDataInterface {
 
     /**
-     * @var array
+     * @var array<mixed>
      */
     private $variableRoutes;
 
     /**
-     * @var array
+     * @var array<mixed>
      */
     private $staticRoutes;
 
     /**
-     * @var array
+     * @var array<mixed>
      */
     private $filters;
 
     /**
-     * @param array $staticRoutes
-     * @param array $variableRoutes
-     * @param array $filters
+     * @param array<mixed> $staticRoutes
+     * @param array<mixed> $variableRoutes
+     * @param array<mixed> $filters
      */
-    public function __construct(array $staticRoutes, array $variableRoutes, array $filters)
-    {
+    function __construct(array $staticRoutes, array $variableRoutes, array $filters) {
         $this->staticRoutes = $staticRoutes;
-
         $this->variableRoutes = $variableRoutes;
-
         $this->filters = $filters;
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
-    public function getStaticRoutes(): array
-    {
+    function getStaticRoutes(): array {
         return $this->staticRoutes;
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
-    public function getVariableRoutes(): array
-    {
+    function getVariableRoutes(): array {
         return $this->variableRoutes;
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
-    public function getFilters(): array
-    {
+    function getFilters(): array {
         return $this->filters;
     }
 }

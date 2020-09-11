@@ -1,5 +1,5 @@
-<?php declare(strict_types=1);
-
+<?php
+declare(strict_types=1);
 namespace Phroute\Phroute\Definition;
 
 interface DefinitionSourceInterface
@@ -9,24 +9,23 @@ interface DefinitionSourceInterface
      * it will be overwitten.
      * @param string $httpMethod
      * @param string $route
-     * @param \Closure|array $handler
-     * @see \Phroute\Phroute\Route
+     * @param mixed $handler
      */
-    public function addRoute(string $httpMethod, string $route, $handler): void;
+    function addRoute(string $httpMethod, string $route, $handler): void;
 
     /**
      * @param FilterDefinitionInterface $filter
      */
-    public function addBeforeFilter(FilterDefinitionInterface $filter): void;
+    function addBeforeFilter(FilterDefinitionInterface $filter): void;
 
     /**
      * @param FilterDefinitionInterface $filter
      */
-    public function addAfterFilter(FilterDefinitionInterface $filter): void;
+    function addAfterFilter(FilterDefinitionInterface $filter): void;
 
     /**
      * Retrieves an array of both 'before' and 'after' filters.
-     * @return array May return an empty array.
+     * @return array<mixed> May return an empty array.
      */
-    public function getFilters(): array;
+    function getFilters(): array;
 }

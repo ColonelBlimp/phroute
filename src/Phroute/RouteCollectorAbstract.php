@@ -1,5 +1,5 @@
-<?php declare(strict_types=1);
-
+<?php
+declare(strict_types=1);
 namespace Phroute\Phroute;
 
 use Phroute\Phroute\Exception\BadRouteException;
@@ -9,7 +9,7 @@ abstract class RouteCollectorAbstract implements RouteDataProviderInterface
     /**
      * @var string
      */
-    public const DEFAULT_CONTROLLER_ROUTE = 'index';
+    protected const DEFAULT_CONTROLLER_ROUTE = 'index';
 
     /**
      * @var int
@@ -22,12 +22,12 @@ abstract class RouteCollectorAbstract implements RouteDataProviderInterface
     protected $routeParser;
 
     /**
-     * @var array
+     * @var array<mixed>
      */
     protected $reverse = [];
 
     /**
-     * @var array
+     * @var array<mixed>
      */
     protected $globalFilters = [];
 
@@ -37,36 +37,34 @@ abstract class RouteCollectorAbstract implements RouteDataProviderInterface
     protected $globalRoutePrefix = '';
 
     /**
-     * @var array
+     * @var array<mixed>
      */
     protected $regexToRoutesMap = [];
 
     /**
-     * @var array
+     * @var array<mixed>
      */
     protected $staticRoutes = [];
 
     /**
-     * @var array
+     * @var array<mixed>
      */
     protected $filters = [];
 
     /**
      * @param RouteParser|null $routeParser
      */
-    public function __construct(RouteParser $routeParser = null)
-    {
+    function __construct(RouteParser $routeParser = null) {
         $this->routeParser = $routeParser ?: new RouteParser();
     }
 
     /**
      * @param string $httpMethod
-     * @param $route
-     * @param $handler
-     * @param array $filters
+     * @param mixed $route
+     * @param mixed $handler
+     * @param array<mixed> $filters
      */
-    public function addRoute(string $httpMethod, $route, $handler, array $filters = [])
-    {
+    function addRoute(string $httpMethod, $route, $handler, array $filters = []): void {
         if (\is_array($route)) {
             list ($route, $name) = $route;
         }
@@ -87,82 +85,74 @@ abstract class RouteCollectorAbstract implements RouteDataProviderInterface
     }
 
     /**
-     * @param $route
-     * @param $handler
-     * @param array $filters
+     * @param mixed $route
+     * @param mixed $handler
+     * @param array<mixed> $filters
      */
-    public function get($route, $handler, array $filters = [])
-    {
+    function get($route, $handler, array $filters = []): void {
         $this->addRoute(Route::GET, $route, $handler, $filters);
     }
 
     /**
-     * @param $route
-     * @param $handler
-     * @param array $filters
+     * @param mixed $route
+     * @param mixed $handler
+     * @param array<mixed> $filters
      */
-    public function head($route, $handler, array $filters = [])
-    {
+    function head($route, $handler, array $filters = []): void {
         $this->addRoute(Route::HEAD, $route, $handler, $filters);
     }
 
     /**
-     * @param $route
-     * @param $handler
-     * @param array $filters
+     * @param mixed $route
+     * @param mixed $handler
+     * @param array<mixed> $filters
      */
-    public function post($route, $handler, array $filters = [])
-    {
+    function post($route, $handler, array $filters = []): void {
         $this->addRoute(Route::POST, $route, $handler, $filters);
     }
 
     /**
-     * @param $route
-     * @param $handler
-     * @param array $filters
+     * @param mixed $route
+     * @param mixed $handler
+     * @param array<mixed> $filters
      */
-    public function put($route, $handler, array $filters = [])
-    {
+    function put($route, $handler, array $filters = []): void {
         $this->addRoute(Route::PUT, $route, $handler, $filters);
     }
 
     /**
-     * @param $route
-     * @param $handler
-     * @param array $filters
+     * @param mixed $route
+     * @param mixed $handler
+     * @param array<mixed> $filters
      */
-    public function patch($route, $handler, array $filters = [])
-    {
+    function patch($route, $handler, array $filters = []): void {
         $this->addRoute(Route::PATCH, $route, $handler, $filters);
     }
 
     /**
-     * @param $route
-     * @param $handler
-     * @param array $filters
+     * @param mixed $route
+     * @param mixed $handler
+     * @param array<mixed> $filters
      */
-    public function delete($route, $handler, array $filters = [])
-    {
+    function delete($route, $handler, array $filters = []): void {
         $this->addRoute(Route::DELETE, $route, $handler, $filters);
     }
 
     /**
-     * @param $route
-     * @param $handler
-     * @param array $filters
+     * @param mixed $route
+     * @param mixed $handler
+     * @param array<mixed> $filters
      */
-    public function options($route, $handler, array $filters = [])
-    {
+    function options($route, $handler, array $filters = []): void {
         $this->addRoute(Route::OPTIONS, $route, $handler, $filters);
     }
 
     /**
-     * @param $route
-     * @param $handler
-     * @param array $filters
+     * @param mixed $route
+     * @param mixed $handler
+     * @param array<mixed> $filters
      */
-    public function any($route, $handler, array $filters = [])
-    {
+    function any($route, $handler, array $filters = []): void {
         $this->addRoute(Route::ANY, $route, $handler, $filters);
     }
 
@@ -170,8 +160,7 @@ abstract class RouteCollectorAbstract implements RouteDataProviderInterface
      * @param string $route
      * @return string
      */
-    protected function addPrefix(string $route): string
-    {
+    protected function addPrefix(string $route): string {
         return $this->trim($this->trim($this->globalRoutePrefix) . '/' . $route);
     }
 
@@ -179,29 +168,25 @@ abstract class RouteCollectorAbstract implements RouteDataProviderInterface
      * @param string $route
      * @return string
      */
-    protected function trim(string $route): string
-    {
+    protected function trim(string $route): string {
         return \trim($route, '/');
     }
 
     /**
      * @param string $httpMethod
-     * @param $routeData
-     * @param $handler
-     * @param $filters
+     * @param array<mixed> $routeData
+     * @param mixed $handler
+     * @param array<mixed> $filters
      */
-    protected function addStaticRoute(string $httpMethod, $routeData, $handler, $filters): void
-    {
+    protected function addStaticRoute(string $httpMethod, $routeData, $handler, $filters): void {
         $routeStr = $routeData[0];
 
-        if (isset($this->staticRoutes[$routeStr][$httpMethod]))
-        {
+        if (isset($this->staticRoutes[$routeStr][$httpMethod])) {
             throw new BadRouteException("Cannot register two routes matching '$routeStr' for method '$httpMethod'");
         }
 
         foreach ($this->regexToRoutesMap as $regex => $routes) {
-            if (isset($routes[$httpMethod]) && \preg_match('~^' . $regex . '$~', $routeStr))
-            {
+            if (isset($routes[$httpMethod]) && \preg_match('~^' . $regex . '$~', $routeStr)) {
                 throw new BadRouteException("Static route '$routeStr' is shadowed by previously defined variable route '$regex' for method '$httpMethod'");
             }
         }
@@ -211,20 +196,15 @@ abstract class RouteCollectorAbstract implements RouteDataProviderInterface
 
     /**
      * @param string $httpMethod
-     * @param $routeData
-     * @param $handler
-     * @param $filters
+     * @param array<mixed> $routeData
+     * @param mixed $handler
+     * @param array<mixed> $filters
      */
-    protected function addVariableRoute(string $httpMethod, $routeData, $handler, $filters): void
-    {
+    protected function addVariableRoute(string $httpMethod, $routeData, $handler, $filters): void {
         list ($regex, $variables) = $routeData;
-
-        if (isset($this->regexToRoutesMap[$regex][$httpMethod]))
-        {
+        if (isset($this->regexToRoutesMap[$regex][$httpMethod])) {
             throw new BadRouteException("Cannot register two routes matching '$regex' for method '$httpMethod'");
         }
-
         $this->regexToRoutesMap[$regex][$httpMethod] = [$handler, $filters, $variables];
     }
-
 }

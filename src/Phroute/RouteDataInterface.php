@@ -1,5 +1,5 @@
-<?php declare(strict_types=1);
-
+<?php
+declare(strict_types=1);
 namespace Phroute\Phroute;
 
 /**
@@ -9,17 +9,17 @@ namespace Phroute\Phroute;
 interface RouteDataInterface
 {
     /**
-     * @return array
+     * @return array<mixed>
      */
-    public function getStaticRoutes(): array;
+    function getStaticRoutes(): array;
 
     /**
-     * @return array
+     * @return array<mixed>
      */
-    public function getVariableRoutes(): array;
+    function getVariableRoutes(): array;
 
     /**
-     * @return array
+     * @return array<mixed>
      */
-    public function getFilters(): array;
+    function getFilters(): array;
 }
