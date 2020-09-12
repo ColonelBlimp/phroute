@@ -21,6 +21,12 @@
 	},
 	"require-dev" : {
 		"phpunit/phpunit" : "~9.3",
-		"phpstan/phpstan" : "~0.12"
+		"phpstan/phpstan" : "~0.12",
+		"php-coveralls/php-coveralls" : "~2.2"
+	},
+	"autoload-dev" : {
+		"psr-4" : {
+			"Phroute\\" : "tests"
+		}
 	}
 }

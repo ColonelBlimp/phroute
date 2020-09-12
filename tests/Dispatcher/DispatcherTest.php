@@ -1,12 +1,15 @@
 <?php
+declare(strict_types=1);
+namespace Phroute\Dispatcher;
 
-namespace Phroute\Phroute\Dispatcher;
-
-use Phroute\Phroute\RouteCollector;
-use Phroute\Phroute\RouteParser;
+use PHPUnit\Framework\TestCase;
 use Phroute\Phroute\Dispatcher;
 use Phroute\Phroute\Route;
-use PHPUnit\Framework\TestCase;
+use Phroute\Phroute\RouteCollector;
+use Phroute\Phroute\RouteParser;
+use Phroute\Phroute\Exception\BadRouteException;
+use Phroute\Phroute\Exception\HttpMethodNotAllowedException;
+use Phroute\Phroute\Exception\HttpRouteNotFoundException;
 
 class Test {
 
@@ -119,11 +122,10 @@ class DispatcherTest extends TestCase
 
     /**
      * @dataProvider provideNotFoundDispatchCases
-     * @expectedException \Phroute\Phroute\Exception\HttpRouteNotFoundException
-     * @expectedExceptionMessage does not exist
      */
     public function testNotFoundDispatches($method, $uri, $callback)
     {
+        $this->expectException(HttpRouteNotFoundException::class);
         $r = $this->router();
         $callback($r);
         $this->dispatch($r, $method, $uri);
@@ -135,8 +137,7 @@ class DispatcherTest extends TestCase
      */
     public function testMethodNotAllowedDispatches($method, $uri, $callback, $allowed)
     {
-//        $this->setExpectedException('\Phroute\Phroute\Exception\HttpMethodNotAllowedException',"Allow: " . implode(', ', $allowed));
-
+        $this->expectException(HttpMethodNotAllowedException::class);
         $r = $this->router();
         $callback($r);
         $this->dispatch($r, $method, $uri);
@@ -214,12 +215,10 @@ class DispatcherTest extends TestCase
         $this->assertEquals('product-catalogue/store/items/1', $r->route('products', array(1)));
     }
 
-    /**
-     * @expectedException \Phroute\Phroute\Exception\BadRouteException
-     * @expectedExceptionMessage Expecting route variable 'store'
-     */
     public function testMissingParameterReverseRoute()
     {
+        $this->expectException(BadRouteException::class);
+        $this->expectExceptionMessage("Expecting route variable 'store'");
         $r = $this->router();
 
         $r->any( array('products/store/{store:i}', 'products'), array(__NAMESPACE__.'\\Test','route'));
@@ -227,23 +226,19 @@ class DispatcherTest extends TestCase
         $this->assertEquals('products/store', $r->route('products'));
     }
 
-    /**
-     * @expectedException \Phroute\Phroute\Exception\BadRouteException
-     * @expectedExceptionMessage Cannot use the same placeholder 'test' twice
-     */
     public function testDuplicateVariableNameError()
     {
+        $this->expectException(BadRouteException::class);
+        $this->expectExceptionMessage("Cannot use the same placeholder 'test' twice");
         $this->router()->addRoute('GET', '/foo/{test}/{test:\d+}', function() {
 
         });
     }
 
-    /**
-     * @expectedException \Phroute\Phroute\Exception\BadRouteException
-     * @expectedExceptionMessage Cannot register two routes matching 'user/([^/]+)' for method 'GET'
-     */
     public function testDuplicateVariableRoute()
     {
+        $this->expectException(BadRouteException::class);
+        $this->expectExceptionMessage("Cannot register two routes matching 'user/([^/]+)' for method 'GET'");
         $r = $this->router();
         $r->addRoute('GET', '/user/{id}', function() {
 
@@ -259,6 +254,9 @@ class DispatcherTest extends TestCase
      */
     public function testDuplicateStaticRoute()
     {
+        $this->expectException(BadRouteException::class);
+        $this->expectExceptionMessage("Cannot register two routes matching 'user' for method 'GET'");
+
         $r = $this->router();
         $r->addRoute('GET', '/user', function() {
 
@@ -274,6 +272,9 @@ class DispatcherTest extends TestCase
      */
     public function testShadowedStaticRoute()
     {
+        $this->expectException(BadRouteException::class);
+        $this->expectExceptionMessage("Static route 'user/nikic' is shadowed by previously defined variable route 'user/([^/]+)' for method 'GET'");
+
         $r = $this->router();
         $r->addRoute('GET', '/user/{name}', function() {
 
@@ -501,13 +502,10 @@ class DispatcherTest extends TestCase
         $this->assertEquals('joegreen', $this->dispatch($r, Route::GET, 'user/parameter-optional-required/joe/green'));
     }
 
-
-    /**
-     * @expectedException \Phroute\Phroute\Exception\HttpRouteNotFoundException
-     * @expectedExceptionMessage does not exist
-     */
     public function testRestfulOptionalRequiredControllerMethodThrows()
     {
+        $this->expectException(HttpRouteNotFoundException::class);
+        $this->expectExceptionMessage("does not exist");
         $r = $this->router();
 
         $r->controller('/user', __NAMESPACE__ . '\\Test');
@@ -515,12 +513,10 @@ class DispatcherTest extends TestCase
         $this->dispatch($r, Route::GET, 'user/parameter-optional-required');
     }
 
-    /**
-     * @expectedException \Phroute\Phroute\Exception\HttpRouteNotFoundException
-     * @expectedExceptionMessage does not exist
-     */
     public function testRestfulRequiredControllerMethodThrows()
     {
+        $this->expectException(HttpRouteNotFoundException::class);
+        $this->expectExceptionMessage("does not exist");
         $r = $this->router();
 
         $r->controller('/user', __NAMESPACE__ . '\\Test');
@@ -528,12 +524,10 @@ class DispatcherTest extends TestCase
         $this->dispatch($r, Route::GET, 'user/parameter-required');
     }
 
-    /**
-     * @expectedException \Phroute\Phroute\Exception\HttpRouteNotFoundException
-     * @expectedExceptionMessage does not exist
-     */
     public function testRestfulHyphenateControllerMethodThrows()
     {
+        $this->expectException(HttpRouteNotFoundException::class);
+        $this->expectExceptionMessage("does not exist");
         $r = $this->router();
 
         $r->controller('/user', __NAMESPACE__ . '\\Test');
