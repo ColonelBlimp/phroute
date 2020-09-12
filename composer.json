@@ -19,9 +19,5 @@
 	"require" : {
 		"php" : ">=7.4"
 	},
-	"autoload-dev" : {
-		"psr-4" : {
-			"Phroute\\" : "tests"
-		}
-	}
+	"type" : "library"
 }
